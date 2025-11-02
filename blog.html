@@ -86,26 +86,53 @@
   </div>
 
   <!-- Scripts -->
-  <script>
+<script>
   function enterBlog() {
-    const intro = document.getElementById('intro');
-    const blog = document.getElementById('blog');
-    const btn = document.getElementById('enterBtn');
+    const intro = document.getElementById("intro");
+    const blog = document.getElementById("blog");
+    const btn = document.getElementById("enterBtn");
+    const video = document.getElementById("introVideo");
 
-    btn.disabled = true; // prevent double-clicks
+    // stop further clicks
+    btn.disabled = true;
 
-    // Trigger slower fade-out
-    intro.style.transition = 'opacity 2.5s ease';
-    intro.style.opacity = '0';
+    // mobile browsers behave better if we pause the video
+    try { video.pause(); } catch (e) {}
 
-    // Reveal blog gradually after fade completes
-    setTimeout(() => {
-      intro.style.display = 'none';
-      blog.classList.remove('opacity-0', 'pointer-events-none');
-      blog.classList.add('fade-in');
-      document.body.style.overflow = 'auto';
-    }, 2500); // matches fade duration
+    // make sure transition takes effect
+    requestAnimationFrame(() => {
+      intro.style.transition = "opacity 2.5s ease";
+      intro.style.opacity = "0";
+
+      setTimeout(() => {
+        // fully remove intro so it no longer blocks touches
+        intro.parentNode.removeChild(intro);
+
+        // show blog
+        blog.style.opacity = "1";
+        blog.style.pointerEvents = "auto";
+        blog.classList.add("fade-in");
+
+        // re-enable scroll and force mobile repaint
+        document.body.style.overflow = "auto";
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+      }, 2600); // match fade length
+    });
+  }
+
+  function togglePost(id) {
+    const post = document.getElementById(`post-${id}`);
+    const isHidden = post.classList.contains("hidden");
+
+    document.querySelectorAll('[id^="post-"]').forEach(p =>
+      p.classList.add("hidden")
+    );
+
+    if (isHidden) post.classList.remove("hidden");
   }
 </script>
+
+
 </body>
 </html>
