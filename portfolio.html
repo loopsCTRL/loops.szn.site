@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Loops.szn</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css"> 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    /* ----------------------------
+        MARQUEE ANIMATION STYLES
+    ----------------------------- */
+    @keyframes marquee-scroll {
+      /* Start position: content is off-screen to the right by its own width plus padding */
+      0% { transform: translateX(calc(100% + 40px)); } 
+      /* End position: content moves fully past the left edge */
+      100% { transform: translateX(-100%); } 
+    }
+    .marquee-box {
+        /* Hide content that exceeds the container width */
+        overflow: hidden; 
+        white-space: nowrap;
+        background: #eee; /* Grey background matching your image */
+        flex-grow: 1;
+        display: flex; /* Required for stretching content */
+        align-items: center;
+    }
+    .marquee-content {
+        display: inline-block;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        /* Padding is kept at 40px for spacing between loops */
+        padding: 0 20px; 
+        /* Apply the infinite loop animation */
+        animation: marquee-scroll 18s linear infinite; 
+    }
+
+    /* ----------------------------
+       Parallax Grid Background
+    ----------------------------- */
+    #parallax-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+      will-change: transform;
+    }
+    
+    /* ----------------------------
+        Header/Project Selector Styles
+    ----------------------------- */
+    .header-window {
+        border: 1px solid #111;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+    }
+    .header-titlebar {
+        background: #111;
+        color: white;
+        font-size: 14px;
+        font-family: "Courier New", monospace;
+        padding: 8px 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-right: 1px solid #111;
+        /* Important for making the anchor tag behave inside the titlebar */
+        display: flex; 
+        align-items: center;
+    }
+    .header-tabs {
+        display: flex;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        /* The header-tabs background is now ONLY for the nav links */
+        flex-grow: 0; /* Changed to 0 so marquee takes remaining space */
+        justify-content: flex-end;
+    }
+    .header-tabs > a,
+    .header-tabs > button {
+        padding: 8px 16px;
+        border-left: 1px solid #ccc;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.1s ease;
+        display: flex; 
+        align-items: center;
+        height: 100%;
+        background: white;
+    }
+    .header-tabs > a:hover,
+    .header-tabs > button:hover {
+        background: #f0f0f0;
+    }
+
+    /* ----------------------------
+       Window styling
+    ----------------------------- */
+    .project-window {
+      border: 1px solid #000;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      background: white;
+    }
+    .window-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .window-body {
+      padding: 16px;
+    }
+
+    /* ----------------------------
+       Tabs
+    ----------------------------- */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid black;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab {
+      font-size: 12px;
+      font-family: "Courier New", monospace;
+      padding: 4px 8px;
+      border: 1px solid black;
+      background: white;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tab.active {
+      background: black;
+      color: white;
+    }
+    .media-pane { display: none; }
+    .media-pane.active { display: block; }
+
+    /* ----------------------------
+       Project selector styling
+    ----------------------------- */
+    .project-link {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      border: 1px solid black;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+    }
+    .project-link:hover {
+      background: #f3f3f3;
+    }
+    .project-link.active {
+      background: black;
+      color: white;
+      font-weight: bold;
+    }
+    /* *** REMOVED EMOJI STYLING HERE *** */
+    .project-link::before {
+      content: ""; 
+      margin-right: 0; 
+    }
+    
+    /* ----------------------------
+       Profile Window Styles (Kept as is)
+    ----------------------------- */
+    #profile-window {
+      position: fixed;
+      width: 450px; 
+      background: white;
+      border: 1px solid black;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: scale(0.98);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      z-index: 999;
+      overflow: hidden;
+    }
+    #profile-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #profile-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* Control Button Container */
+    #profile-controls {
+      display: flex;
+      gap: 6px;
+    }
+    /* Base Button Style */
+    #profile-controls button {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: "Courier New", monospace;
+      width: 18px;
+      height: 18px;
+      line-height: 1;
+      text-align: center;
+      padding: 0;
+      transition: background 0.1s;
+    }
+    /* Hover Effect */
+    #profile-controls button:hover {
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+
+    #profile-content {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: all 0.3s ease-out;
+      height: auto;
+      opacity: 1;
+    }
+    #profile-content.hidden {
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden; 
+    }
+    #profile-content img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+    }
+    #profile-description {
+      flex: 1;
+    }
+
+    /* ----------------------------
+       Responsive tweaks
+    ----------------------------- */
+
+    @media (max-width: 768px) {
+      aside { display: none; }
+      
+      #desktop-nav {
+        display: flex !important;
+        width: 100%;
+        flex-wrap: nowrap;
+        border: 1px solid #111; 
+        border-radius: 2px; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+      }
+      
+      .md\:hidden {
+          display: none !important;
+      }
+
+      .marquee-box {
+          flex-shrink: 1; 
+          min-width: 0; 
+          overflow-x: hidden; 
+          background: #eee; 
+      }
+      
+      .marquee-content {
+          font-size: 12px;
+          animation-duration: 10s; 
+          padding: 0 10px;
+      }
+      
+      .header-titlebar {
+          flex-shrink: 0;
+          font-size: 12px; 
+          padding: 6px 12px; 
+          border-right: 1px solid #111; 
+      }
+      
+      .header-tabs {
+          flex-shrink: 0; 
+          flex-wrap: nowrap; 
+          overflow-x: auto; 
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+      }
+      
+      .header-tabs::-webkit-scrollbar {
+          display: none;
+      }
+      
+      .header-tabs > a,
+      .header-tabs > button {
+          flex-shrink: 0; 
+          font-size: 12px; 
+          padding: 6px 10px; 
+          height: auto; 
+          border-left: 1px solid #ccc; 
+          background: white; 
+      }
+    }
+    .container { max-width: 1100px; margin-left: auto; margin-right: auto; }
+/* --- HEADER VISUAL FIXES --- */
+#site-header {
+  margin-top: 40px !important; /* creates floating gap */
+}
+
+.header-window {
+  margin: 0 auto; /* center horizontally */
+  max-width: 900px; /* optional: constrain width */
+  border: 1px solid #111 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2) !important;
+  overflow: hidden; /* prevent background bleed */
+}
+
+.container.mx-auto.py-6.px-4.relative.z-20 {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+/* --- MOBILE HEADER WIDTH CONTROL --- */
+@media (max-width: 768px) {
+  aside { display: none; }
+
+  /* Force the desktop nav bar to display on mobile */
+  #desktop-nav {
+    display: flex !important;
+    width: 100%;
+    flex-wrap: nowrap;
+    /* Re-add the full border for mobile */
+    border: 1px solid #111; /* Explicitly set border */
+    border-radius: 2px; /* Maintain rounded corners */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Maintain shadow */
+  }
+
+  /* Hide the dedicated mobile header/hamburger section if present */
+  .md\:hidden {
+      display: none !important;
+  }
+
+  /* Make the Marquee Box shrink to fit and enable horizontal scrolling */
+  .marquee-box {
+      flex-shrink: 1; /* Allow it to shrink */
+      min-width: 0; /* Important for flex items inside horizontal scroll */
+      overflow-x: hidden; /* Hide the marquee overflow for space efficiency */
+      background: #eee; /* Ensure grey background is back */
+  }
+
+  /* Speed up the marquee animation for compact screens */
+  .marquee-content {
+      font-size: 12px;
+      animation-duration: 10s; /* Faster scroll */
+      padding: 0 10px;
+  }
+
+  /* Make the Titlebar (LOOPS.SZN) static and ensure it doesn't shrink */
+  .header-titlebar {
+      flex-shrink: 0;
+      font-size: 12px; /* Smaller font */
+      padding: 6px 12px; /* Smaller padding */
+      border-right: 1px solid #111; /* Ensure right border */
+  }
+
+  /* Ensure the nav tabs wrap or scroll if needed, but we keep them inline-flex */
+  .header-tabs {
+      flex-shrink: 0; /* Prevent the buttons from shrinking much */
+      flex-wrap: nowrap; /* Keep them in one line */
+      overflow-x: auto; /* Allow horizontal scrolling if buttons are too wide */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+  }
+
+  /* Hide scrollbar for header-tabs */
+  .header-tabs::-webkit-scrollbar {
+      display: none;
+  }
+
+  .header-tabs > a,
+  .header-tabs > button {
+      flex-shrink: 0; /* Prevent individual buttons from collapsing */
+      font-size: 12px; /* Smaller font */
+      padding: 6px 10px; /* Smaller padding */
+      height: auto; /* Don't force 100% height, rely on padding */
+      border-left: 1px solid #ccc; /* Ensure left border */
+      background: white; /* Ensure white background */
+  }
+}
+/* --- DESKTOP PROJECT WINDOW SIZE ADJUSTMENT --- */
+@media (min-width: 1024px) {
+  /* Set a max width for the content column so it doesn't spread too wide */
+  .main-content-wrapper {
+      /* Based on w-3/4 (75% width) in a 1100px container, this is about 825px max, 
+         but we'll keep a more controlled max-width for better centering. */
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: 0; /* Align content to the left of its 700px wrapper */
+  }
+
+  .project-window {
+    max-width: 100%; /* Ensure projects fill their parent column (up to 700px) */
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .project-window .window-body {
+    padding: 16px; 
+  }
+
+  .project-window video,
+  .project-window img {
+    border-radius: 2px;
+  }
+}
+
+/* New style for the monospace detail lines */
+.detail-line {
+    font-family: "Courier New", monospace;
+    font-size: 13px; /* Slightly adjusted for better visual fit */
+    padding: 6px 0;
+    margin: 0;
+    border: none;
+    border-top: 1px solid #ddd;
+    display: flex;
+    white-space: pre; /* Use to preserve spaces if we were using a single line, but we'll use separate elements */
+}
+
+.detail-line:first-child {
+    border-top: none; /* Remove top border on the first line */
+}
+
+/* Styling for the label (e.g., TITLE) */
+.detail-label {
+    color: #444; /* Darker gray for label */
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 150px; /* Fixed width for alignment */
+    flex-shrink: 0;
+}
+
+/* Styling for the value (e.g., DRAKE CANVAS CONCEPTS) */
+.detail-value {
+    color: #111; /* Black for the value */
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+
+
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-500">
+
+  <div id="parallax-grid"></div>
+
+  <header class="container mx-auto py-6 px-4 relative z-20" id="site-header">
+    <div class="header-window" id="desktop-nav">
+      <div class="header-titlebar">
+        <a href="index.html" class="text-white no-underline hover:underline">
+          LOOPS.SZN
+        </a>
+      </div>
+
+      <div class="marquee-box">
+        <div class="marquee-content">// DESIGN / ANIMATION / UI-UX / MOTION GRAPHICS / VIDEO EDITING / CREATIVE DIRECTION //</div>
+      </div>
+
+      <nav class="header-tabs">
+        <a href="portfolio.html">PORTFOLIO</a>
+        <button id="profile-btn">PROFILE</button>
+        </nav>
+    </div>
+
+    <div class="md:hidden flex justify-between items-center border-b border-black pb-4" style="display: none !important;">
+    </div>
+    <div id="mobile-menu" class="hidden" style="display: none !important;">
+    </div>
+  </header>
+
+  <div class="flex flex-col md:flex-row md:gap-8 min-h-screen container mx-auto">
+    <main class="w-full md:w-3/4 py-8 px-4 md:px-0">
+      <div class="main-content-wrapper mx-auto md:mr-0 md:ml-auto flex flex-col space-y-20"> 
+        <section id="project-1" class="project-window">
+          <div class="window-titlebar">DRAKE CANVAS CONCEPTS</div>
+          <div class="window-body">
+            <div class="tab-bar">
+              <button class="tab active" data-target="drake1">Her Loss</button>
+              <button class="tab" data-target="drake2">ICEMAN</button>
+              <button class="tab" data-target="drake3">More Life</button>
+              <button class="tab" data-target="drake4">Take Care</button>
+              <button class="tab" data-target="drake5">Views</button>
+            </div>
+            
+            <div id="drake1" class="media-pane active">
+              <video controls class="w-full h-auto">
+                <source src="Content /Drake/her_loss.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div id="drake2" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /Drake/iceman.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div id="drake3" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /Drake/more_life.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div id="drake4" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /Drake/take_care.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div id="drake5" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /Drake/views.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="mt-4">
+              <div class="detail-line"><span class="detail-label">TITLE</span><span class="detail-value">DRAKE CANVAS CONCEPTS</span></div>
+              <div class="detail-line"><span class="detail-label">DATE</span><span class="detail-value">MAY 2025</span></div>
+              <div class="detail-line"><span class="detail-label">CLIENT</span><span class="detail-value">CONCEPTUAL / PERSONAL</span></div>
+              <div class="detail-line"><span class="detail-label">ROLE</span><span class="detail-value">MOTION DESIGNER / CREATIVE</span></div>
+              <div class="detail-line"><span class="detail-label">MEDIA</span><span class="detail-value">MOTION GRAPHICS</span></div>
+            </div>
+            </div>
+        </section>
+
+        <section id="project-2" class="project-window">
+          <div class="window-titlebar">YEEZY</div>
+          <div class="window-body">
+            <div class="tab-bar">
+              <button class="tab active" data-target="sx1">SZN X</button>
+              <button class="tab" data-target="sx2">WINDOWS</button>
+              <button class="tab" data-target="sx3">BULLY</button>
+            </div>
+            <div id="sx1" class="media-pane active">
+              <video controls class="w-full h-auto">
+                <source src="Content /yeezy/Szn X V2 (2) (1).mp4" type="video/mp4"> 
+              </video>
+            </div>
+            <div id="sx2" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /yeezy/oldwindows (1).mp4" type="video/mp4">
+              </video>
+            </div>
+            <div id="sx3" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /yeezy/Yeos (1).mp4" type="video/mp4">
+              </video>
+            </div>
+            
+            <div class="mt-4">
+              <div class="detail-line"><span class="detail-label">TITLE</span><span class="detail-value">YEEZY SZN VISUALS</span></div>
+              <div class="detail-line"><span class="detail-label">DATE</span><span class="detail-value">AUGUST 2025</span></div>
+              <div class="detail-line"><span class="detail-label">CLIENT</span><span class="detail-value">INTERNAL</span></div>
+              <div class="detail-line"><span class="detail-label">ROLE</span><span class="detail-value">MARKETING DESIGNER</span></div>
+              <div class="detail-line"><span class="detail-label">MEDIA</span><span class="detail-value">VIDEO / CONCEPT</span></div>
+            </div>
+            </div>
+        </section>
+
+        <section id="project-3" class="project-window">
+          <div class="window-titlebar">SHE AGAIN</div>
+          <div class="window-body">
+            <div class="tab-bar">
+              <button class="tab active" data-target="sa1">Video</button>
+            </div>
+            <div id="sa1" class="media-pane active">
+              <video controls class="w-full h-auto">
+                <source src="Content /Tyler/she_again.mp4" type="video/mp4"> </video>
+            </div>
+            
+            <div class="mt-4">
+              <div class="detail-line"><span class="detail-label">TITLE</span><span class="detail-value">SHE AGAIN PROMO</span></div>
+              <div class="detail-line"><span class="detail-label">DATE</span><span class="detail-value">OCTOBER 2025</span></div>
+              <div class="detail-line"><span class="detail-label">CLIENT</span><span class="detail-value">CONCEPTUAL / PERSONAL</span></div>
+              <div class="detail-line"><span class="detail-label">ROLE</span><span class="detail-value">MOTION DESIGNER / CREATIVE DIRECTOR</span></div>
+              <div class="detail-line"><span class="detail-label">MEDIA</span><span class="detail-value">PROMOTIONAL VIDEO</span></div>
+            </div>
+            </div>
+        </section>
+
+        <section id="project-4" class="project-window">
+          <div class="window-titlebar">iOS 26</div>
+          <div class="window-body">
+            <div class="tab-bar">
+              <button class="tab active" data-target="ios1">Mockup</button>
+            </div>
+            <div id="ios1" class="media-pane active">
+              <video controls class="w-full h-auto">
+                <source src="Content /yzy_app/Ios26xscifi (1).mp4" type="video/mp4">
+              </video>
+            </div>
+            
+            <div class="mt-4">
+              <div class="detail-line"><span class="detail-label">TITLE</span><span class="detail-value">IOS 26 CONCEPT</span></div>
+              <div class="detail-line"><span class="detail-label">DATE</span><span class="detail-value">JUNE 2025</span></div>
+              <div class="detail-line"><span class="detail-label">CLIENT</span><span class="detail-value">INDEPENDENT CONCEPT</span></div>
+              <div class="detail-line"><span class="detail-label">ROLE</span><span class="detail-value">MARKETING DESIGNER</span></div>
+              <div class="detail-line"><span class="detail-label">MEDIA</span><span class="detail-value">UI/UX MOCKUP / VIDEO</span></div>
+            </div>
+            </div>
+        </section>
+
+        <section id="project-5" class="project-window">
+          <div class="window-titlebar">YZY APP</div>
+          <div class="window-body">
+            <div class="tab-bar">
+              <button class="tab active" data-target="yzy1">Video 1</button>
+              <button class="tab" data-target="yzy2">Video 2</button>
+              <button class="tab" data-target="yzy3">Video 3</button>
+            </div>
+            <div id="yzy1" class="media-pane active">
+              <video controls class="w-full h-auto">
+                <source src="Content /yzy_app/fuk sumn with vocals version (2) (1).mp4" type="video/mp4"> 
+              </video>
+            </div>
+            <div id="yzy2" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /yzy_app/yeezyapp (1).mp4" type="video/mp4"> 
+              </video>
+            </div>
+            <div id="yzy3" class="media-pane">
+              <video controls class="w-full h-auto">
+                <source src="Content /yzy_app/yzyappaddone (2) (1).mp4" type="video/mp4"> 
+              </video>
+            </div>
+            
+            <div class="mt-4">
+              <div class="detail-line"><span class="detail-label">TITLE</span><span class="detail-value">YZY APP LAUNCH</span></div>
+              <div class="detail-line"><span class="detail-label">DATE</span><span class="detail-value">APRIL 2024</span></div>
+              <div class="detail-line"><span class="detail-label">CLIENT</span><span class="detail-value">YZY</span></div>
+              <div class="detail-line"><span class="detail-label">ROLE</span><span class="detail-value">VIDEO EDITOR</span></div>
+              <div class="detail-line"><span class="detail-label">MEDIA</span><span class="detail-value">PROMOTIONAL VIDEO</span></div>
+            </div>
+            </div>
+        </section>
+      </div>
+      </main>
+
+    <aside class="w-full md:w-1/4 py-8 px-4 md:px-0 sticky top-8 h-fit hidden md:block">
+      <div class="project-window flex flex-col mx-auto md:ml-0 md:mr-auto" id="selector-window">
+        <div class="window-titlebar">
+          PROJECT SELECTOR
+          <button id="toggle-selector" class="text-xs px-2 py-1 bg-white border border-white text-black hover:bg-gray-200">–</button>
+        </div>
+        <div class="window-body" id="selector-body">
+          <ul class="space-y-2">
+            <li class="project-link" data-id="project-1">01 — Drake Canvas Concepts</li>
+            <li class="project-link" data-id="project-2">02 — Szn X</li>
+            <li class="project-link" data-id="project-3">03 — She Again</li>
+            <li class="project-link" data-id="project-4">04 — iOS 26</li>
+            <li class="project-link" data-id="project-5">05 — YZY App</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Global z-index counter for stacking windows
+    let zIndexCounter = 10;
+
+    // Tabs functionality to pause videos (No change needed, logic is generic)
+    document.querySelectorAll('.tab-bar').forEach(tabBar => {
+        tabBar.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tab')) {
+                const targetId = e.target.dataset.target;
+                const parentBody = e.target.closest('.window-body');
+
+                // 1. Pause videos in active panes
+                parentBody.querySelectorAll('.media-pane.active video').forEach(video => {
+                    if (!video.paused) video.pause();
+                });
+
+                // 2. Deactivate all tabs and panes
+                parentBody.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                parentBody.querySelectorAll('.media-pane').forEach(p => p.classList.remove('active'));
+
+                // 3. Activate clicked tab/pane
+                e.target.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            }
+        });
+    });
+
+    // Project selector behavior
+    const links = document.querySelectorAll('.project-link');
+    const sections = document.querySelectorAll('.project-window');
+    links.forEach(link => {
+        link.addEventListener('click', () => {
+            document.getElementById(link.dataset.id).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // Intersection Observer for highlighting the active project link
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            const link = document.querySelector(`.project-link[data-id="${entry.target.id}"]`);
+            if (link) {
+                // Check if the project is entering the view (or is mostly visible)
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) { 
+                    document.querySelectorAll('.project-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
+                     // Keep existing active link if scrolling away, let the next one take over when it hits threshold
+                }
+            }
+        });
+    }, { threshold: [0.5] }); // Trigger when 50% of the element is visible
+
+    sections.forEach(section => observer.observe(section));
+
+    // Collapse/expand selector
+    const toggleBtn = document.getElementById("toggle-selector");
+    const selectorBody = document.getElementById("selector-body");
+    toggleBtn.addEventListener("click", () => {
+        selectorBody.classList.toggle("hidden");
+        toggleBtn.textContent = selectorBody.classList.contains("hidden") ? "+" : "–";
+    });
+
+    // -----------------------------
+    // Profile Window Logic (Remains unchanged)
+    // -----------------------------
+    const profileButton = document.getElementById('profile-btn');
+    let profileWindow = null;
+
+    function createProfileWindow() {
+        if (profileWindow) {
+            profileWindow.style.zIndex = zIndexCounter++;
+            return;
+        }
+
+        profileWindow = document.createElement('div');
+        profileWindow.id = 'profile-window';
+        profileWindow.style.zIndex = zIndexCounter++;
+
+        const titlebar = document.createElement('div');
+        titlebar.id = 'profile-titlebar';
+        titlebar.innerHTML = `
+          <span>PROFILE</span>
+          <div id="profile-controls">
+            <button id="profile-minimise">–</button>
+            <button id="profile-close">×</button>
+          </div>
+        `;
+
+        const content = document.createElement('div');
+        content.id = 'profile-content';
+        content.innerHTML = `
+          <div class="flex flex-col items-start gap-4">
+              <img src="portrait.jpg" alt="Portrait">
+              <div class="space-y-1 text-sm">
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// BEHANCE</a>
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// INSTAGRAM</a>
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// TIKTOK</a>
+              </div>
+          </div>
+          <div id="profile-description">
+          <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
+          <p>Loops.szn is a motion designer with extensive experience, including work on the YZY App. He crafts fluid, impactful animations that merge technical skill with creative vision.</p>
+          <br><p>Always in beta. Always in loops.</p>
+          </div>
+        `;
+
+        profileWindow.appendChild(titlebar);
+        profileWindow.appendChild(content);
+        document.body.appendChild(profileWindow);
+
+        const { innerWidth, innerHeight } = window;
+        setTimeout(() => {
+            profileWindow.style.left = `${(innerWidth - profileWindow.offsetWidth) / 2}px`;
+            profileWindow.style.top = `${(innerHeight - profileWindow.offsetHeight) / 2}px`;
+            profileWindow.classList.add('active');
+        }, 10);
+
+        // Bring to front on click
+        profileWindow.addEventListener('mousedown', () => {
+            profileWindow.style.zIndex = zIndexCounter++;
+        });
+
+        // Minimise toggle
+        const minimiseBtn = profileWindow.querySelector('#profile-minimise');
+        minimiseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            content.classList.toggle('hidden');
+            minimiseBtn.textContent = content.classList.contains('hidden') ? '+' : '–';
+        });
+
+        // Close button
+        const closeBtn = profileWindow.querySelector('#profile-close');
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileWindow.classList.remove('active');
+            setTimeout(() => {
+                profileWindow.remove();
+                profileWindow = null;
+            }, 200);
+        });
+
+        // Draggable by titlebar
+        let offsetX, offsetY;
+        titlebar.addEventListener('mousedown', e => {
+            if (e.target.closest('#profile-controls')) return;
+            profileWindow.style.zIndex = zIndexCounter++;
+            offsetX = e.clientX - profileWindow.offsetLeft;
+            offsetY = e.clientY - profileWindow.offsetTop;
+            function onMouseMove(e) {
+                profileWindow.style.left = `${e.clientX - offsetX}px`;
+                profileWindow.style.top = `${e.clientY - offsetY}px`;
+            }
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+
+    profileButton.addEventListener('click', createProfileWindow);
+      // Scroll to project if hash is present on page load
+  window.addEventListener('load', () => {
+    const hash = window.location.hash; // e.g., #project-1
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        // Scroll the element into view smoothly
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Highlight corresponding project link
+        const link = document.querySelector(`.project-link[data-id="${hash.substring(1)}"]`);
+        if (link) {
+          document.querySelectorAll('.project-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      }
+    }
+  });
+
+  </script>
+
+</body>
+</html>

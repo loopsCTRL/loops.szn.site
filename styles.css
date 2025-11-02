@@ -1,0 +1,154 @@
+/* ------------------------------------
+   Fonts
+------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Apply Inter to all headings */
+h1, h2, h3, h4, h5, h6,
+.heading-font {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+/* ------------------------------------
+   Theme
+------------------------------------ */
+.dark-mode {
+  background-color: #111;
+  color: #eee;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ------------------------------------
+   GLOBAL MEDIA WINDOW STYLES
+------------------------------------ */
+.media-container {
+  position: absolute;
+  border: 1px solid #000;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.35s ease,
+              box-shadow 0.25s ease;
+  cursor: pointer;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+  pointer-events: none;
+
+  /* Flexbox layout for titlebar + content */
+  display: flex;
+  flex-direction: column;
+}
+
+.media-container.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+  z-index: 50;
+}
+
+.media-container.inactive {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+  pointer-events: none;
+}
+
+.media-container.hovered {
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  z-index: 70;
+}
+
+.media-container.dragging {
+  box-shadow: 0 16px 32px rgba(0,0,0,0.35);
+  z-index: 80;
+  cursor: grabbing;
+}
+
+.media-titlebar {
+  background: #111;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  font-family: "Courier New", monospace;
+  border-bottom: 1px solid black;
+  text-transform: uppercase;
+  user-select: none;
+
+  /* Fix height to content */
+  flex: 0 0 auto;
+}
+
+.media-item {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: none;
+  box-shadow: none;
+}
+
+.dragging {
+  opacity: 0.95;
+}
+
+/* ------------------------------------
+   INDEX PAGE
+------------------------------------ */
+#media-grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Faint parallax grid background */
+#parallax-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* ------------------------------------
+   PORTFOLIO PAGE
+------------------------------------ */
+.sticky-list-container {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.preview-animate {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+img.shadow {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+img:hover.shadow-lg {
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+/* ------------------------------------
+   Utility tweaks
+------------------------------------ */
+.container {
+  max-width: 1100px;
+}
