@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Smooth fade transitions */
+    .fade-out {
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      pointer-events: none;
+    }
+    .fade-in {
+      opacity: 1;
+      transition: opacity 1.5s ease;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-[#000091] text-white font-sans overflow-hidden">
+ <!-- INTRO SCREEN -->
+<div id="intro" class="fixed inset-0 flex items-center justify-center bg-black z-50 fade-in">
+  <!-- Background video -->
+  <video autoplay muted loop playsinline id="introVideo"
+    class="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none">
+    <source src="blogimages/ITNY_ Archives - Darlene Gilbert skating _en pointe_.mp4" type="video/mp4">
+  </video>
+
+  <!-- Optional overlay tint -->
+  <div class="absolute inset-0 bg-[#000091]/50 pointer-events-none"></div>
+
+  <!-- Enter button -->
+  <button
+    id="enterBtn"
+    onclick="enterBlog()"
+    class="relative z-50 px-10 py-5 text-2xl font-bold border-4 border-white bg-[#0000aa]
+           hover:bg-[#000066] transition-all duration-500 cursor-pointer"
+  >
+    ENTER BLOG
+  </button>
+</div>
+
+
+  <!-- MAIN BLOG CONTENT -->
+  <div id="blog" class="opacity-0 pointer-events-none transition-opacity duration-1000">
+    <!-- Top Header -->
+    <header class="text-center py-6 border-b-2 border-white">
+      <h1 class="text-4xl font-bold mb-1">Blog</h1>
+    </header>
+
+    <!-- Blog Grid -->
+    <main class="max-w-5xl mx-auto mt-8 px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 🧱 BLOG POST 1 -->
+      <div
+        class="bg-[#0000aa] p-4 hover:bg-[#000066] transition-colors duration-200 cursor-pointer"
+        onclick="togglePost(1)"
+      >
+        <img
+          src="blogimages/images (18).jpeg"
+          alt="My First Post Thumbnail"
+          class="w-full h-40 object-cover mb-3"
+        />
+        <p class="text-gray-300 text-sm">Nov 1, 25</p>
+        <div id="post-1" class="hidden mt-3 text-sm text-gray-200 leading-relaxed">
+          Today I had the opportunity to think more and understand how I view my life, my relationships and how I want to move continuing. <br>
+          We have so many grown adults in our life as authority trying to control our visions our ideas and our early life is supposed to be preparation for out adult life, but then why does everything in our adult life supposedly depend on stuff we do during our early life?<br> 
+          <br>
+          As children, we're introduced to this dopamine rush when we get a good grade, and it becomes addicting, and when you "fuck up" it hits you so hard emotionally, and for what? Isn't this suppsoed to be preparation for out future? Why does this determine our worth as people?<br>
+          <br>
+          For these grown ass adults they're the ones still upholding this concept of money and at the end of the day money is all a mental thing its about the worth we give it, so these people are not only just broke, but they're losing in their own game.
+        </div>
+      </div>
+      <!-- 🧱 END BLOG POST 1 -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 border-t-2 border-white mt-8">
+      <img
+        src="blogimages/giphy (2).webp"
+        alt="Footer Badge"
+        class="mx-auto w-32"
+      />
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+  function enterBlog() {
+    const intro = document.getElementById('intro');
+    const blog = document.getElementById('blog');
+    const btn = document.getElementById('enterBtn');
+
+    btn.disabled = true; // prevent double-clicks
+
+    // Trigger slower fade-out
+    intro.style.transition = 'opacity 2.5s ease';
+    intro.style.opacity = '0';
+
+    // Reveal blog gradually after fade completes
+    setTimeout(() => {
+      intro.style.display = 'none';
+      blog.classList.remove('opacity-0', 'pointer-events-none');
+      blog.classList.add('fade-in');
+      document.body.style.overflow = 'auto';
+    }, 2500); // matches fade duration
+  }
+</script>
+</body>
+</html>
