@@ -890,7 +890,7 @@ function startAutoCycle() {
       const project = projectKeys[cycleIndex % projectKeys.length];
       generateMedia(project);
       projectItems.forEach(i => i.classList.remove('font-bold'));
-      const activeItem = document.querySelector(.project-item[data-project="${project}"]);
+      const activeItem = document.querySelector(`.project-item[data-project="${project}"]`);
       if (activeItem) activeItem.classList.add('font-bold');
       cycleIndex++;
     }
