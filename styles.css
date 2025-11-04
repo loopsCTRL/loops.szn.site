@@ -1,53 +1,80 @@
-/* ------------------------------------
-   Fonts
------------------------------------- */
+/* ====================================
+   FONTS & BASE
+==================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-body {
-  font-family: 'Inter', sans-serif;
+:root {
+  --ui-bg: #ffffff;
+  --ui-fg: #111827;
+  --ui-border: #111;
+  --muted: #e5e7eb;
+  --accent: #111;
+  --mono: "Courier New", monospace;
+  --sans: 'Inter', sans-serif;
 }
 
-/* Apply Inter to all headings */
+body {
+  font-family: var(--sans);
+  color: var(--ui-fg);
+  background: #f3f4f6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
 h1, h2, h3, h4, h5, h6,
 .heading-font {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--sans);
   font-weight: 700;
 }
 
-/* ------------------------------------
-   Theme
------------------------------------- */
-.dark-mode {
-  background-color: #111;
-  color: #eee;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* ------------------------------------
+/* ====================================
+   DARK MODE
+==================================== */
+.dark-mode {
+  --ui-bg: #111;
+  --ui-fg: #eee;
+  --ui-border: #333;
+  --muted: #222;
+  --accent: #eee;
+  background-color: var(--ui-bg);
+  color: var(--ui-fg);
+}
+
+/* ====================================
    GLOBAL MEDIA WINDOW STYLES
------------------------------------- */
+==================================== */
 .media-container {
   position: absolute;
-  border: 1px solid #000;
-  background: #fff;
-  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg);
+  border-radius: 3px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
-              opacity 0.35s ease,
-              box-shadow 0.25s ease;
   cursor: pointer;
   z-index: 1;
   overflow: hidden;
+
   opacity: 0;
-  transform: scale(0.95) translateY(10px);
+  transform: scale(0.96) translateY(8px);
   pointer-events: none;
 
-  /* Flexbox layout for titlebar + content */
-  display: flex;
-  flex-direction: column;
+  transition:
+    transform 0.35s cubic-bezier(0.4,0,0.2,1),
+    opacity 0.35s ease,
+    box-shadow 0.25s ease;
+  will-change: transform, opacity;
 }
 
 .media-container.active {
@@ -57,10 +84,11 @@ html {
   z-index: 50;
 }
 
-.media-container.inactive {
-  opacity: 0;
-  transform: scale(0.95) translateY(10px);
-  pointer-events: none;
+.media-container.dragging {
+  opacity: 0.95;
+  z-index: 80;
+  cursor: grabbing;
+  box-shadow: 0 16px 32px rgba(0,0,0,0.35);
 }
 
 .media-container.hovered {
@@ -68,23 +96,15 @@ html {
   z-index: 70;
 }
 
-.media-container.dragging {
-  box-shadow: 0 16px 32px rgba(0,0,0,0.35);
-  z-index: 80;
-  cursor: grabbing;
-}
-
 .media-titlebar {
-  background: #111;
-  color: white;
-  font-size: 12px;
-  padding: 4px 8px;
-  font-family: "Courier New", monospace;
-  border-bottom: 1px solid black;
+  background: var(--accent);
+  color: var(--ui-bg);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--ui-border);
   text-transform: uppercase;
   user-select: none;
-
-  /* Fix height to content */
   flex: 0 0 auto;
 }
 
@@ -94,17 +114,11 @@ html {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: none;
-  box-shadow: none;
 }
 
-.dragging {
-  opacity: 0.95;
-}
-
-/* ------------------------------------
-   INDEX PAGE
------------------------------------- */
+/* ====================================
+   GRID & BACKGROUND
+==================================== */
 #media-grid {
   position: absolute;
   inset: 0;
@@ -112,21 +126,23 @@ html {
   z-index: 0;
 }
 
-/* Faint parallax grid background */
 #parallax-grid {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
   background-size: 40px 40px;
   will-change: transform;
   pointer-events: none;
+  opacity: 0.4;
+  transition: transform 0.1s ease-out;
 }
 
-/* ------------------------------------
+/* ====================================
    PORTFOLIO PAGE
------------------------------------- */
+==================================== */
 .sticky-list-container {
   position: sticky;
   top: 0;
@@ -140,15 +156,52 @@ html {
 
 img.shadow {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease;
 }
 
-img:hover.shadow-lg {
+img:hover.shadow {
   box-shadow: 0 10px 28px rgba(0,0,0,0.12);
 }
 
-/* ------------------------------------
-   Utility tweaks
------------------------------------- */
+/* ====================================
+   LAYOUT UTILITIES
+==================================== */
 .container {
   max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .media-titlebar {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  .media-container {
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  #parallax-grid {
+    display: none;
+  }
+}
+
+/* ====================================
+   DARK MODE SPECIFICS
+==================================== */
+.dark-mode .media-container {
+  background: #1a1a1a;
+  border-color: #333;
+}
+
+.dark-mode .media-titlebar {
+  background: #222;
+  color: #f5f5f5;
+}
+
+.dark-mode #parallax-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
 }

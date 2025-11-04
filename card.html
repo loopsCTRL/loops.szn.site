@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DREAM SPACE</title>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  overflow:hidden;
+  font-family:"Comic Sans MS",sans-serif;
+  color:#fff;
+  background:linear-gradient(45deg,#b48fff,#74e4d1,#ffd4e5,#b1a4ff);
+  background-size:400% 400%;
+  animation:bgflow 22s ease-in-out infinite;
+  cursor:none;
+}
+@keyframes bgflow{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.cursor{
+  position:fixed;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:radial-gradient(circle,#ffffffcc 0%,rgba(255,255,255,0) 70%);
+  filter:blur(8px);
+  pointer-events:none;
+  z-index:999;
+  mix-blend-mode:screen;
+  transform:translate(-50%,-50%);
+  transition:transform 0.05s linear;
+}
+.title{
+  text-align:center;
+  font-size:42px;
+  letter-spacing:3px;
+  margin-top:30px;
+  text-shadow:0 0 15px #fff,0 0 25px #d5baff;
+  animation:breath 8s ease-in-out infinite;
+}
+@keyframes breath{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+.gallery{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:40px;
+  padding:100px;
+  transition:opacity 0.4s ease;
+}
+.card-thumb{
+  width:240px;
+  height:140px;
+  border-radius:20px;
+  border:3px solid rgba(255,255,255,0.5);
+  background-size:cover;
+  background-position:center;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 20px rgba(255,255,255,0.3);
+  transition:transform 0.6s ease,opacity 0.4s ease,box-shadow 0.6s;
+}
+.thumb-text {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  height:100%;
+  color:#fff;
+  font-weight:bold;
+  text-shadow:0 0 8px #fff;
+  font-size:1.1em;
+}
+.card-thumb:hover{
+  transform:rotate(3deg) scale(1.1);
+  box-shadow:0 0 40px rgba(255,255,255,0.5);
+}
+.card-thumb.faded{
+  opacity:0;
+  pointer-events:none;
+}
+.zoomed{
+  position:fixed;
+  left:var(--x);
+  top:var(--y);
+  width:240px;
+  height:140px;
+  border:none;
+  background:transparent;
+  transform:translate(-50%,-50%) scale(1);
+  transition:all 0.9s cubic-bezier(0.8,0,0.2,1);
+  perspective:1000px;
+  z-index:10;
+}
+.zoomed.active{
+  left:50%;
+  top:50%;
+  width:420px;
+  height:250px;
+  transform:translate(-50%,-50%) scale(1.35) rotate(1deg);
+}
+.card3d{
+  position:absolute;
+  inset:0;
+  transform-style:preserve-3d;
+  transition:transform 1.2s ease;
+}
+.card3d.flipped{
+  transform:rotateY(180deg) rotateZ(180deg);
+}
+.face{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  backface-visibility:hidden;
+  border-radius:20px;
+  color:#fff;
+  font-weight:bold;
+  font-size:1.2em;
+  text-align:center;
+  text-shadow:0 0 12px #fff;
+  border:3px solid rgba(255,255,255,0.4);
+}
+.front, .back{
+  background-size:cover;
+  background-position:center;
+}
+.back{
+  transform:rotateY(180deg) rotateZ(180deg);
+}
+.editor{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,0.25);
+  border:2px solid rgba(255,255,255,0.5);
+  border-radius:20px;
+  backdrop-filter:blur(15px);
+  padding:20px 30px;
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  z-index:20;
+  transition:opacity 0.4s ease;
+}
+label{
+  font-size:0.9em;
+  color:#fff;
+  text-shadow:0 0 5px #fff;
+}
+input, button{
+  border:none;
+  border-radius:10px;
+  background:rgba(255,255,255,0.7);
+  padding:8px;
+  width:220px;
+  text-align:center;
+  font-family:inherit;
+  font-size:1em;
+  color:#333;
+}
+button{
+  background:#fff;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="title">✶ make your business card ✶</div>
+<div class="gallery" id="gallery"></div>
+<div class="editor" id="editor"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+const gallery = document.getElementById('gallery');
+const editor = document.getElementById('editor');
+const cursor = document.getElementById('cursor');
+
+let zoomed = null;
+let activeThumb = null;
+
+// input fields
+const nameFront = document.createElement('input');
+const nameBack = document.createElement('input');
+const labelFront = document.createElement('label');
+const labelBack = document.createElement('label');
+const downloadBtn = document.createElement('button');
+
+labelFront.textContent = 'Front Text';
+labelBack.textContent = 'Back Text';
+downloadBtn.textContent = 'Download PNG';
+
+editor.append(labelFront, nameFront, labelBack, nameBack, downloadBtn);
+editor.style.opacity = 0;
+
+[nameFront, nameBack].forEach(inp=>{
+  inp.type='text';
+  inp.placeholder=inp===nameFront?'Front side...':'Back side...';
+});
+
+// templates
+const templates = [
+  { name:'Template 1', front:'card/card_1_front.png', back:'card/card_1_bg.png' },
+  { name:'Template 2', front:'card/card_2_front.png', back:'card/card_2_front.png' },
+  { name:'Template 3', front:'card3_front.png', back:'card3_back.png' }
+];
+
+// generate gallery
+templates.forEach(tpl=>{
+  const card=document.createElement('div');
+  card.className='card-thumb';
+  card.style.backgroundImage=`url(${tpl.front})`;
+  card.dataset.frontImage=tpl.front;
+  card.dataset.backImage=tpl.back;
+  card.dataset.front=tpl.name;
+  card.dataset.back='Back side';
+  card.innerHTML=`<div class="thumb-text">${tpl.name}</div>`;
+  gallery.appendChild(card);
+});
+
+// card click (event delegation)
+gallery.addEventListener('click',e=>{
+  const thumb=e.target.closest('.card-thumb');
+  if(!thumb)return;
+  e.stopPropagation();
+  if(zoomed)zoomOut();
+
+  const rect=thumb.getBoundingClientRect();
+  activeThumb=thumb;
+
+  const frontText=thumb.dataset.front||'Front Side';
+  const backText=thumb.dataset.back||'Back Side';
+
+  zoomed=document.createElement('div');
+  zoomed.className='zoomed';
+  zoomed.style.setProperty('--x',`${rect.left+rect.width/2}px`);
+  zoomed.style.setProperty('--y',`${rect.top+rect.height/2}px`);
+  zoomed.innerHTML=`
+    <div class="card3d">
+      <div class="face front" id="frontText" style="background-image:url('${thumb.dataset.frontImage}')">${frontText}</div>
+      <div class="face back" id="backText" style="background-image:url('${thumb.dataset.backImage}')">${backText}</div>
+    </div>`;
+  document.body.appendChild(zoomed);
+
+  document.querySelectorAll('.card-thumb').forEach(c=>{
+    if(c!==thumb)c.classList.add('faded');
+  });
+
+  setTimeout(()=>zoomed.classList.add('active'),20);
+  editor.style.display='flex';
+  editor.style.opacity=1;
+
+  nameFront.value=frontText;
+  nameBack.value=backText;
+
+  const card3d=zoomed.querySelector('.card3d');
+  zoomed.addEventListener('click',ev=>{
+    ev.stopPropagation();
+    card3d.classList.toggle('flipped');
+  });
+});
+
+// click outside zoomed
+document.addEventListener('click',e=>{
+  if(!zoomed)return;
+  if(zoomed.contains(e.target)||editor.contains(e.target))return;
+  zoomOut();
+});
+
+function zoomOut(){
+  if(!zoomed||!activeThumb)return;
+  const newFront=nameFront.value||'Front Side';
+  const newBack=nameBack.value||'Back Side';
+  activeThumb.dataset.front=newFront;
+  activeThumb.dataset.back=newBack;
+  activeThumb.querySelector('.thumb-text').textContent=newFront;
+
+  const rect=activeThumb.getBoundingClientRect();
+  zoomed.classList.remove('active');
+  zoomed.style.setProperty('--x',`${rect.left+rect.width/2}px`);
+  zoomed.style.setProperty('--y',`${rect.top+rect.height/2}px`);
+  document.querySelectorAll('.card-thumb').forEach(c=>c.classList.remove('faded'));
+  editor.style.opacity=0;
+  zoomed.addEventListener('transitionend',()=>{
+    zoomed.remove();
+    zoomed=null;
+    activeThumb=null;
+    editor.style.display='none';
+  },{once:true});
+}
+
+nameFront.addEventListener('input',()=>{
+  if(zoomed)zoomed.querySelector('#frontText').textContent=nameFront.value||'Front Side';
+});
+nameBack.addEventListener('input',()=>{
+  if(zoomed)zoomed.querySelector('#backText').textContent=nameBack.value||'Back Side';
+});
+
+// download button
+downloadBtn.addEventListener('click',()=>{
+  if(!zoomed)return;
+  html2canvas(zoomed.querySelector('.card3d')).then(canvas=>{
+    const link=document.createElement('a');
+    link.download='business_card.png';
+    link.href=canvas.toDataURL();
+    link.click();
+  });
+});
+
+// big cursor movement
+document.addEventListener('mousemove',e=>{
+  cursor.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;
+});
+</script>
+
+</body>
+</html>

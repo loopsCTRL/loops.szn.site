@@ -878,19 +878,27 @@ function generateMedia(project) {
 }
 
 // ----------------------------
-// Auto-cycle
+// Auto-cycle 
 // ----------------------------
 const projectKeys = Object.keys(projects);
-autoCycleInterval = setInterval(() => {
-  if (!userInteracted && !isMobile()) {
-    const project = projectKeys[cycleIndex % projectKeys.length];
-    generateMedia(project);
-    projectItems.forEach(i => i.classList.remove('font-bold'));
-    const activeItem = document.querySelector(`.project-item[data-project="${project}"]`);
-    if (activeItem) activeItem.classList.add('font-bold');
-    cycleIndex++;
-  }
-}, 3000);
+
+function startAutoCycle() {
+  // Only run auto-cycle on desktop
+  if (isMobile()) return;
+  autoCycleInterval = setInterval(() => {
+    if (!userInteracted) {
+      const project = projectKeys[cycleIndex % projectKeys.length];
+      generateMedia(project);
+      projectItems.forEach(i => i.classList.remove('font-bold'));
+      const activeItem = document.querySelector(.project-item[data-project="${project}"]);
+      if (activeItem) activeItem.classList.add('font-bold');
+      cycleIndex++;
+    }
+  }, 3000);
+}
+
+// Start it only if not mobile
+if (!isMobile()) startAutoCycle();
 
 function stopAutoCycle() {
   if (!userInteracted) {
