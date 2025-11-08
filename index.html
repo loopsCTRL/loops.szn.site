@@ -79,8 +79,8 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0,0,0,0.05) 2px, transparent 2px),
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 2px, transparent 2px);
   background-size: 40px 40px;
   z-index: -1;
   will-change: transform;
@@ -1075,6 +1075,7 @@ if (!isMobile() && !('ontouchstart' in window)) {
   grid.style.display = 'none';
 }
 
+
 // ----------------------------
 // Initial page load
 // ----------------------------
@@ -1082,25 +1083,23 @@ window.addEventListener('load', () => {
   if (isMobile()) {
     if(introOverlay) introOverlay.style.display = 'none';
   }
-
   if (visitCount === 1 || visitCount % 3 === 0) {
     playIntro();
   } else {
     finishIntro(true);
   }
-
   // initial project
-  generateMedia('DrakeCanvas');
-  const initialActiveProject = document.querySelector('.project-item[data-project="Drake Canvas"]');
-  if (initialActiveProject) initialActiveProject.classList.add('font-bold');
-  cycleIndex = 1;
-});
+  generateMedia('DrakeCanvas'); 
+  const initialActiveProject = 
+ document.querySelector('.project-item[data-project="Drake Canvas"]');
+  if (initialActiveProject) 
+ initialActiveProject.classList.add('font-bold');
 
-if (introOverlay) {
-  introOverlay.addEventListener('click', () => finishIntro(true));
-}
-window.addEventListener('keydown', (e) => {
-  if(introOverlay && introOverlay.style.display !== 'none') finishIntro(true);
+  if (isMobile()) {
+    stopAutoCycle(); 
+  }
+
+  cycleIndex = 1;
 });
 
 // Accessibility: resize handling to re-render for mobile/desktop mode changes
