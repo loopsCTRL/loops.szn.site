@@ -755,7 +755,7 @@ function createMediaElement(item) {
   if (item.type === 'image') {
     element = document.createElement('img');
     element.className = 'media-item';
-    element.loading = 'lazy';
+    
     element.dataset.src = item.src;
     element.alt = '';
     element.onerror = function() { this.src = 'https://placehold.co/400x300/FF0000/FFFFFF?text=ERROR'; };
@@ -898,7 +898,7 @@ function generateMedia(project) {
     container.appendChild(titlebar);
     const content = createMediaElement(item);
     container.appendChild(content);
-    setTimeout(() => content.src = content.dataset.src, 50 + i * 50);
+    content.src = content.dataset.src;
 
     makeDraggable(container, titlebar);
     mediaGrid.appendChild(container);
