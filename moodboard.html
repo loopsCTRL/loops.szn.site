@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moodboard</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: sans-serif;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .imgWrap {
+      position: relative;
+      margin: -40px;
+      transform-origin: center;
+      transition: none;
+    }
+    .imgWrap img {
+      width: 100%;     /* fits inside the grid column */
+      height: auto;    /* keeps original aspect ratio */
+      display: block;
+    }
+
+
+    .imgWrap:hover {
+      transform: scale(1.3);
+      z-index: 9999 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const images = [
+      "diddy pics/IMG-20251129-WA0004.jpg",
+      "diddy pics/IMG-20251129-WA0005.jpg",
+      "diddy pics/IMG-20251129-WA0006.jpg",
+      "diddy pics/IMG-20251129-WA0007.jpg",
+      "diddy pics/IMG-20251129-WA0008.jpg",
+      "diddy pics/IMG-20251129-WA0009.jpg",
+      "diddy pics/IMG-20251129-WA0004.jpg",
+      "diddy pics/IMG-20251129-WA0010.jpg",
+      "diddy pics/IMG-20251129-WA0011.jpg",
+      "diddy pics/IMG-20251129-WA0012.jpg",
+      "diddy pics/IMG-20251129-WA0013.jpg",
+      "diddy pics/IMG-20251129-WA0014.jpg",
+      "diddy pics/image.png",
+      "diddy pics/image copy.png",
+      "diddy pics/image copy 2.png",
+      "diddy pics/image copy 3.png",
+      "diddy pics/image copy 4.png",
+      "diddy pics/image copy 5.png",
+      "diddy pics/945rnjr2gg3g1.png",
+      "diddy pics/vre9rtwqi23g1.png",
+      "diddy pics/image copy 6.png",
+      "diddy pics/image copy 7.png",
+      "diddy pics/image copy 8.png",
+      "diddy pics/image copy 9.png",
+      "diddy pics/image copy 10.png",
+      "diddy pics/image copy 11.png",
+      "diddy pics/image copy 12.png",
+    ];
+
+    const grid = document.getElementById("grid");
+
+    function addImages() {
+    images.forEach(src => {
+        const wrap = document.createElement("div");
+        wrap.className = "imgWrap";
+
+        const offset = (Math.random() - 0.5) * 40;
+        const overlap = (Math.random() - 0.5) * 40;
+        const z = Math.floor(Math.random() * 40);
+
+        wrap.style.transform = `translate(${offset}px, ${overlap}px)`;
+        wrap.style.zIndex = z;
+
+        const img = document.createElement("img");
+        img.src = src;
+
+        wrap.appendChild(img);
+        grid.appendChild(wrap);
+    });
+    }
+
+    // load initial set
+    addImages();
+
+    // load more when near bottom
+    window.addEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 600) {
+        addImages();
+    }
+    });
+
+  </script>
+</body>
+</html>

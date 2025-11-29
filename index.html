@@ -1,1140 +1,1203 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MY PORTFOLIO</title>
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MY PORTFOLIO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+    rel="stylesheet"
+  />
 
-<script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ---------------------------- Base fonts + helpers ----------------------------- */
+    :root {
+      --ui-bg: #ffffff;
+      --ui-border: #111;
+      --muted: #eee;
+      --accent: #111;
+      --mono: "Courier New", monospace;
+      --sans: "Inter", sans-serif;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    html,
+    body {
+      height: 100%;
+    }
 
-<style>
+    body {
+      font-family: var(--sans);
+      margin: 0;
+      background: #f3f4f6;
+      color: #111827;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-/* ----------------------------
- Base fonts + helpers
- ----------------------------- */
+    body:not(.mobile-lock) {
+      overflow-y: auto;
+    }
 
-:root {
-  --ui-bg: #ffffff;
-  --ui-border: #111;
-  --muted: #eee;
-  --accent: #111;
-  --mono: "Courier New", monospace;
-  --sans: 'Inter', sans-serif;
-}
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-html,body { height:100%; }
-body {
-  font-family: var(--sans);
-  margin: 0;
-  background: #f3f4f6;
-  color: #111827;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-body:not(.mobile-lock) {
-  overflow-y: auto;
-}
+    /* ---------------------------- MARQUEE ----------------------------- */
+    @keyframes marquee-scroll {
+      0% {
+        transform: translateX(calc(100% + 40px));
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
 
-a { color: inherit; text-decoration: none; }
+    .marquee-box {
+      overflow: hidden;
+      white-space: nowrap;
+      background: #eee;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
 
-/* ----------------------------
- MARQUEE ANIMATION STYLES
- ----------------------------- */
+    .marquee-content {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 0 20px;
+      animation: marquee-scroll 18s linear infinite;
+    }
 
-/* Using the reference header's marquee animation and styles (replaces old header CSS) */
-@keyframes marquee-scroll {
-  /* Start position: content is off-screen to the right by its own width plus padding */
-  0% { transform: translateX(calc(100% + 40px)); }
-  /* End position: content moves fully past the left edge */
-  100% { transform: translateX(-100%); }
-}
-.marquee-box {
-    /* Hide content that exceeds the container width */
-    overflow: hidden;
-    white-space: nowrap;
-    background: #eee; /* Grey background matching your image */
-    flex-grow: 1;
-    display: flex; /* Required for stretching content */
-    align-items: center;
-}
-.marquee-content {
-    display: inline-block;
-    font-family: "Courier New", monospace;
-    font-size: 14px;
-    /* Padding is kept at 40px for spacing between loops */
-    padding: 0 20px;
-    /* Apply the infinite loop animation */
-    animation: marquee-scroll 18s linear infinite;
-}
+    /* ---------------------------- Parallax Grid ----------------------------- */
+    #parallax-grid {
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0.05) 2px,
+          transparent 2px
+        ),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
+      background-size: 40px 40px;
+      z-index: -1;
+      will-change: transform;
+    }
 
-/* ----------------------------
- Parallax Grid Background
------------------------------ */
-#parallax-grid {
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(0,0,0,0.05) 2px, transparent 2px),
-    linear-gradient(to bottom, rgba(0,0,0,0.05) 2px, transparent 2px);
-  background-size: 40px 40px;
-  z-index: -1;
-  will-change: transform;
-}
+    /* ---------------------------- Header ----------------------------- */
+    .header-window {
+      border: 1px solid #111;
+      background: white;
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+    }
 
-/* ----------------------------
- Header/Project Selector Styles
- (REPLACED: using reference script's header CSS)
- ----------------------------- */
-.header-window {
-    border: 1px solid #111;
-    background: white;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-}
-.header-titlebar {
-    background: #111;
-    color: white;
-    font-size: 14px;
-    font-family: "Courier New", monospace;
-    padding: 8px 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-right: 1px solid #111;
-    /* Important for making the anchor tag behave inside the titlebar */
-    display: flex;
-    align-items: center;
-}
-.header-tabs {
-    display: flex;
-    font-family: "Courier New", monospace;
-    font-size: 14px;
-    /* The header-tabs background is now ONLY for the nav links */
-    flex-grow: 0; /* Changed to 0 so marquee takes remaining space */
-    justify-content: flex-end;
-}
-.header-tabs > a,
-.header-tabs > button {
-    padding: 8px 16px;
-    border-left: 1px solid #ccc;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.1s ease;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    background: white;
-}
-.header-tabs > a:hover,
-.header-tabs > button:hover {
-    background: #f0f0f0;
-}
+    .header-titlebar {
+      background: #111;
+      color: white;
+      font-size: 14px;
+      font-family: var(--mono);
+      padding: 8px 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-right: 1px solid #111;
+      display: flex;
+      align-items: center;
+    }
 
-/* ----------------------------
- PROFILE WINDOW (KEEP FROM REFERENCE)
- ----------------------------- */
-#profile-window {
-  position: fixed;
-  width: 450px;
-  background: white;
-  border: 1px solid black;
-  border-radius: 2px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  opacity: 0;
-  transform: scale(0.98);
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
-  z-index: 999;
-  overflow: hidden;
-}
-#profile-window.active {
-  opacity: 1;
-  transform: scale(1);
-}
-#profile-titlebar {
-  background: #111;
-  color: white;
-  font-size: 12px;
-  padding: 4px 8px;
-  font-family: "Courier New", monospace;
-  border-bottom: 1px solid black;
-  text-transform: uppercase;
-  user-select: none;
-  cursor: grab;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-/* Control Button Container */
-#profile-controls {
-  display: flex;
-  gap: 6px;
-}
-/* Base Button Style */
-#profile-controls button {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: "Courier New", monospace;
-  width: 18px;
-  height: 18px;
-  line-height: 1;
-  text-align: center;
-  padding: 0;
-  transition: background 0.1s;
-}
-/* Hover Effect */
-#profile-controls button:hover {
-  background: rgba(255,255,255,0.15);
-  border-radius: 2px;
-}
+    .header-tabs {
+      display: flex;
+      font-family: var(--mono);
+      font-size: 14px;
+      justify-content: flex-end;
+    }
 
-#profile-content {
-  display: flex;
-  padding: 20px;
-  gap: 20px;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-  line-height: 1.4;
-  transition: all 0.3s ease-out;
-  height: auto;
-  opacity: 1;
-}
-#profile-content.hidden {
-  height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: 0;
-  overflow: hidden;
-}
-#profile-content img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border: 1px solid #ddd;
-}
-#profile-description {
-  flex: 1;
-}
+    .header-tabs > a,
+    .header-tabs > button {
+      padding: 8px 16px;
+      border-left: 1px solid #ccc;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      background: white;
+    }
 
-/* ----------------------------
- Responsive tweaks for header (MAJOR)
- ----------------------------- */
-@media (max-width: 768px) {
-  aside { display: none; }
+    .header-tabs > a:hover,
+    .header-tabs > button:hover {
+      background: #f0f0f0;
+    }
 
-  /* Force the desktop nav bar to display on mobile */
-  #desktop-nav {
-    display: flex !important;
-    width: 100%;
-    flex-wrap: nowrap;
-    /* Re-add the full border for mobile */
-    border: 1px solid #111; /* Explicitly set border */
-    border-radius: 2px; /* Maintain rounded corners */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Maintain shadow */
-  }
+    /* ---------------------------- PROFILE WINDOW ----------------------------- */
+    #profile-window {
+      position: fixed;
+      width: 450px;
+      background: white;
+      border: 1px solid black;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: scale(0.98);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease;
+      z-index: 999;
+      overflow: hidden;
+    }
 
-  /* Hide the dedicated mobile header/hamburger section if present */
-  .md\:hidden {
-      display: none !important;
-  }
+    #profile-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
 
-  /* Make the Marquee Box shrink to fit and enable horizontal scrolling */
-  .marquee-box {
-      flex-shrink: 1; /* Allow it to shrink */
-      min-width: 0; /* Important for flex items inside horizontal scroll */
-      overflow-x: hidden; /* Hide the marquee overflow for space efficiency */
-      background: #eee; /* Ensure grey background is back */
-  }
-
-  /* Speed up the marquee animation for compact screens */
-  .marquee-content {
+    #profile-titlebar {
+      background: #111;
+      color: white;
       font-size: 12px;
-      animation-duration: 10s; /* Faster scroll */
-      padding: 0 10px;
-  }
+      padding: 4px 8px;
+      font-family: var(--mono);
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-  /* Make the Titlebar (LOOPS.SZN) static and ensure it doesn't shrink */
-  .header-titlebar {
-      flex-shrink: 0;
-      font-size: 12px; /* Smaller font */
-      padding: 6px 12px; /* Smaller padding */
-      border-right: 1px solid #111; /* Ensure right border */
-  }
+    #profile-controls {
+      display: flex;
+      gap: 6px;
+    }
 
-  /* Ensure the nav tabs wrap or scroll if needed, but we keep them inline-flex */
-  .header-tabs {
-      flex-shrink: 0; /* Prevent the buttons from shrinking much */
-      flex-wrap: nowrap; /* Keep them in one line */
-      overflow-x: auto; /* Allow horizontal scrolling if buttons are too wide */
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-  }
+    #profile-controls button {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: var(--mono);
+      width: 18px;
+      height: 18px;
+      text-align: center;
+      padding: 0;
+      transition: background 0.1s;
+    }
 
-  /* Hide scrollbar for header-tabs */
-  .header-tabs::-webkit-scrollbar {
-      display: none;
-  }
+    #profile-controls button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
 
-  .header-tabs > a,
-  .header-tabs > button {
-      flex-shrink: 0; /* Prevent individual buttons from collapsing */
-      font-size: 12px; /* Smaller font */
-      padding: 6px 10px; /* Smaller padding */
-      height: auto; /* Don't force 100% height, rely on padding */
-      border-left: 1px solid #ccc; /* Ensure left border */
-      background: white; /* Ensure white background */
-  }
-}
+    #profile-content {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      font-family: var(--mono);
+      font-size: 14px;
+      transition: all 0.3s ease-out;
+      height: auto;
+      opacity: 1;
+    }
 
-/* ----------------------------
- (KEEP REMAINING ORIGINAL STYLES FROM YOUR UPLOADED FILE)
- ----------------------------- */
+    #profile-content.hidden {
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
 
-/* media + window styles (kept from your original file) */
+    #profile-content img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+    }
 
-.media-container {
-  position: absolute;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  border-radius: 2px;
-  opacity: 0;
-  transform: scale(0.95);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
-    opacity 0.35s ease,
-    box-shadow 0.25s ease;
-  z-index: 10;
-  cursor: pointer;
-  pointer-events: none;
-  overflow: hidden;
-  margin: 0 !important;
-}
-.media-container.active {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-  z-index: 50;
-}
-.media-titlebar {
-  background: var(--accent);
-  color: white;
-  font-size: 12px;
-  padding: 6px 8px;
-  font-family: var(--mono);
-  border-bottom: 1px solid black;
-  user-select: none;
-  text-transform: uppercase;
-  cursor: grab;
-}
-.media-item {
-  width: 100%;
-  height: calc(100% - 28px);
-  object-fit: cover;
-  display: block;
-  transition: none;
-}
+    #profile-description {
+      flex: 1;
+    }
 
-/* Profile window (note: we kept the reference profile CSS above, this is fine) */
+    /* ---------------------------- MEDIA WINDOWS ----------------------------- */
+    .media-container {
+      position: absolute;
+      border: 1px solid var(--ui-border);
+      background: var(--ui-bg);
+      border-radius: 2px;
+      opacity: 0;
+      transform: scale(0.95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.35s, opacity 0.35s, box-shadow 0.25s;
+      z-index: 10;
+      cursor: pointer;
+      pointer-events: none;
+      overflow: hidden;
+    }
 
-#intro-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--ui-bg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-#intro-window {
-  position: relative;
-  width: 320px;
-  height: 120px;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  border-radius: 2px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-#intro-window.active { opacity: 1; transform: scale(1); }
-#intro-window.minimised { transform: scale(0.2); opacity: 0; }
-#intro-titlebar { background: var(--accent); color: white; font-size:12px; padding:6px 8px; font-family:var(--mono); border-bottom:1px solid black; text-transform:uppercase; }
-#intro-text { font-family:var(--mono); font-size:16px; padding:16px; white-space:pre; }
+    .media-container.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      z-index: 50;
+    }
 
-/* media grid + project selector kept */
-#media-grid {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
+    .media-titlebar {
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      padding: 6px 8px;
+      font-family: var(--mono);
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: grab;
+    }
 
-#project-selector {
-  background: var(--ui-bg);
-  border: 1px solid var(--ui-border);
-  border-radius: 2px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  min-width: 220px;
-}
-.fixed-titlebar {
-  background: var(--accent);
-  color: white;
-  font-size: 12px;
-  padding: 6px 8px;
-  font-family: var(--mono);
-  border-bottom: 1px solid var(--ui-border);
-  text-transform: uppercase;
-  font-weight: bold;
-}
-.fixed-content {
-  padding: 12px 16px;
-  font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1.6;
-}
-.fixed-content .project-item:hover { color: #777; }
+    .media-item {
+      width: 100%;
+      height: calc(100% - 28px);
+      object-fit: cover;
+      display: block;
+    }
 
-/* ----------------------------
- MOBILE SPECIFIC STYLES (remaining from original)
- ----------------------------- */
+    /* ---------------------------- INTRO ----------------------------- */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--ui-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
 
-@media (max-width: 767px) {
-  @media (max-width: 767px) {
-  #parallax-grid,
-  #intro-overlay { display: none; }
+    #intro-window {
+      position: relative;
+      width: 320px;
+      height: 120px;
+      border: 1px solid var(--ui-border);
+      background: var(--ui-bg);
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
 
-  #site-main {
-    padding-top: 80px;
-    padding-bottom: 80px;
-    min-height: auto;
-  }
+    #intro-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
 
-  #media-grid {
-    position: relative;
-    overflow-y: visible;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 0 16px;
-    height: auto;
-  }
+    #intro-window.minimised {
+      transform: scale(0.2);
+      opacity: 0;
+    }
 
-  .media-container {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    opacity: 1 !important;
-    transform: none !important;
-    pointer-events: auto !important;
-    border: 1px solid #e6e6e6;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: none !important; /* 🔸 stops flickering */
-  }
+    #intro-titlebar {
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      padding: 6px 8px;
+      font-family: var(--mono);
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+    }
 
-  .media-item {
-    width: 100% !important;
-    height: auto !important;
-    display: block;
-    transition: none !important;
-    transform: none !important; /* 🔸 disables GPU flicker */
-  }
+    #intro-text {
+      font-family: var(--mono);
+      font-size: 16px;
+      padding: 16px;
+      white-space: pre;
+    }
 
-  .media-titlebar {
-    font-size: 14px;
-    padding: 8px 10px;
-    cursor: default;
-  }
+    /* ---------------------------- PROJECT SELECTOR ----------------------------- */
+    #project-selector {
+      background: var(--ui-bg);
+      border: 1px solid var(--ui-border);
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      min-width: 220px;
+    }
 
-  /* Other existing header & project selector styles can stay as-is */
-}
+    .fixed-titlebar {
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      padding: 6px 8px;
+      font-family: var(--mono);
+      border-bottom: 1px solid var(--ui-border);
+      text-transform: uppercase;
+      font-weight: bold;
+    }
 
-  .header-window { border-radius:0; box-shadow:none; }
-  .header-tabs > a, .header-tabs > button { padding: 8px 10px; font-size:13px; }
+    .fixed-content {
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+    }
 
-  /* Fixed Project Selector at the bottom */
-  #project-selector {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    border-radius: 0;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    z-index: 60;
-    margin-bottom: 0 !important;
-  }
-  .fixed-titlebar {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-  .fixed-content {
-    padding: 8px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow-x: hidden;
-    align-items: flex-start;
-    font-size: 13px;
-    line-height: 1.3;
-  }
-  .project-item {
-    white-space: normal;
-    padding: 2px 0;
-    width: 100%;
-    border-bottom: 1px dotted #ccc;
-  }
-  .project-item:last-child {
-    border-bottom: none;
-  }
+    .fixed-content .project-item:hover {
+      color: #777;
+    }
 
-  /* Mobile Profile Window to be centered */
-  #profile-window {
-    position: fixed !important;
-    left: 50% !important;
-    top: 50% !important;
-    width: 90% !important;
-    max-width: 400px;
-    height: auto !important;
-    border-radius: 2px !important;
-    transform: translate(-50%, -50%) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
-    z-index: 9999 !important;
-    overflow-y: auto;
-  }
-  #profile-content { flex-direction: column !important; padding: 20px !important; }
-  #profile-content img { width: 100px; height: 100px; margin-bottom: 12px; }
-  body.mobile-lock { overflow: hidden; }
+    /* ---------------------------- MOBILE ----------------------------- */
+    @media (max-width: 767px) {
+      #parallax-grid,
+      #intro-overlay {
+        display: none;
+      }
 
-  /* Mobile specific layout adjustments */
-  #site-header {
-    padding: 10px 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #f3f4f6;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    z-index: 70;
-  }
+      #site-main {
+        padding-top: 80px;
+        padding-bottom: 80px;
+        min-height: auto;
+      }
 
-  .mobile-header-container {
-    display: flex;
-    flex-direction: column;
-    padding: 0 16px;
-  }
-}
+      #media-grid {
+        position: relative;
+        overflow-y: visible;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 16px;
+        height: auto;
+      }
 
-/* ----------------------------
- END MOBILE SPECIFIC STYLES
- ----------------------------- */
+      .media-container {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
 
-.container { max-width: 1100px; margin-left: auto; margin-right: auto; }
-/* --- HEADER VISUAL FIXES --- */
-#site-header {
-  margin-top: 40px !important; /* creates floating gap */
-}
+      .media-titlebar {
+        font-size: 14px;
+        padding: 8px 10px;
+        cursor: default;
+      }
 
-.header-window {
-  margin: 0 auto; /* center horizontally */
-  max-width: 900px; /* optional: constrain width */
-  border: 1px solid #111 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2) !important;
-  overflow: hidden; /* prevent background bleed */
-}
+      #project-selector {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 0;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 60;
+      }
 
-.container.mx-auto.py-6.px-4.relative.z-20 {
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-/* --- MOBILE HEADER WIDTH CONTROL --- */
-@media (max-width: 768px) {
-  .header-window {
-    max-width: 95% !important;   /* keeps it slightly inset from screen edges */
-    margin: 10px auto !important; /* centers it + adds top/bottom space */
-    border-radius: 4px !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
-  }
+      #profile-window {
+        left: 50% !important;
+        top: 50% !important;
+        width: 90% !important;
+        max-width: 400px;
+        transform: translate(-50%, -50%) !important;
+      }
+    }
 
-  #site-header {
-    margin-top: 16px !important; /* reduce top spacing for small screens */
-  }
-}
-
-
-</style>
-
+    /* ---------------------------- END ----------------------------- */
+  </style>
 </head>
 
-<body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
+<body
+  class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden"
+>
+  <div id="parallax-grid"></div>
 
-<div id="parallax-grid"></div>
-
-<div id="intro-overlay">
-  <div id="intro-window">
-    <div id="intro-titlebar">LOOPS.SZN</div>
-    <div id="intro-text"></div>
+  <div id="intro-overlay">
+    <div id="intro-window">
+      <div id="intro-titlebar">LOOPS.SZN</div>
+      <div id="intro-text"></div>
+    </div>
   </div>
+
+  <header class="container mx-auto py-6 px-4 relative z-20" id="site-header">
+    <div class="header-window" id="desktop-nav">
+      <div class="header-titlebar">
+        <a
+          href="index.html"
+          class="text-white no-underline hover:underline"
+        >
+          LOOPS.SZN
+        </a>
+      </div>
+
+      <div class="marquee-box">
+        <div class="marquee-content">
+          // DESIGN / ANIMATION / UI-UX / MOTION GRAPHICS / VIDEO EDITING /
+          CREATIVE DIRECTION //
+        </div>
+      </div>
+
+      <nav class="header-tabs">
+        <a href="portfolio.html">PORTFOLIO</a>
+        <button id="profile-btn">PROFILE</button>
+      </nav>
+    </div>
+  </header>
+
+  <main
+    class="relative flex flex-col items-center justify-start min-h-screen px-8 py-8 opacity-0 transition-opacity duration-700"
+    id="site-main"
+  >
+    <div id="media-grid" class="absolute inset-0 z-0"></div>
+
+    <div id="project-selector" class="fixed-window fixed bottom-8 left-8 z-20">
+      <div class="fixed-titlebar">PROJECTS.EXE</div>
+
+      <ul class="fixed-content">
+        <li
+          class="project-item cursor-pointer hover:underline transition"
+          data-project="DrakeCanvas"
+        >
+          01 — Drake
+        </li>
+        <li
+          class="project-item cursor-pointer hover:underline transition"
+          data-project="sznX"
+        >
+          02 — Szn X
+        </li>
+        <li
+          class="project-item cursor-pointer hover:underline transition"
+          data-project="yzyApp"
+        >
+          03 — YZY App
+        </li>
+      </ul>
+    </div>
+    <div id="music-player-window" class="media-container active" style="width:260px; height:180px; left:120px; top:120px; ">
+<div class="media-titlebar">MUSIC PLAYER.EXE</div>
+<div class="p-4 font-mono text-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<button id="music-prev" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟨</button>
+<button id="music-play" class="px-3 py-1 border border-black rounded hover:bg-gray-200">PLAY</button>
+<button id="music-next" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟩</button>
 </div>
 
-<!-- ===========================
-     REPLACED HEADER (FROM REFERENCE)
-     Replaced the original header block with the reference header (desktop + mobile).
-     =========================== -->
-<header class="container mx-auto py-6 px-4 relative z-20" id="site-header">
-  <div class="header-window" id="desktop-nav">
-    <div class="header-titlebar">
-      <a href="index.html" class="text-white no-underline hover:underline">
-        LOOPS.SZN
-      </a>
-    </div>
 
-    <div class="marquee-box">
-      <div class="marquee-content">// DESIGN / ANIMATION / UI-UX / MOTION GRAPHICS / VIDEO EDITING / CREATIVE DIRECTION //</div>
-    </div>
+<div class="flex items-center gap-2">
+<span>VOL</span>
+<input id="music-volume" type="range" min="0" max="1" step="0.01" class="flex-grow" />
+</div>
 
-    <nav class="header-tabs">
-      <a href="portfolio.html">PORTFOLIO</a>
-      <button id="profile-btn">PROFILE</button>
-    </nav>
-  </div>
 
-  <div class="md:hidden flex justify-between items-center border-b border-black pb-4" style="display: none !important;">
-  </div>
-  <div id="mobile-menu" class="hidden" style="display: none !important;">
-  </div>
-</header>
-<!-- ===========================
-     END REPLACED HEADER
-     =========================== -->
+<div id="music-title" class="mt-1 text-xs tracking-wide"></div>
+<audio id="music-audio" preload="auto"></audio>
+</div>
+</div>
 
-<main class="relative flex flex-col items-center justify-start min-h-screen px-8 py-8 opacity-0 transition-opacity duration-700" id="site-main">
+  </main>
 
-  <div id="media-grid" class="absolute inset-0 z-0"></div>
-
-  <div id="project-selector" class="fixed-window fixed bottom-8 left-8 z-20">
-    <div class="fixed-titlebar">PROJECTS.EXE</div>
-    <ul class="fixed-content">
-      <li class="project-item cursor-pointer hover:underline transition" data-project="DrakeCanvas">01 — Drake</li>
-      <li class="project-item cursor-pointer hover:underline transition" data-project="sznX">02 — Szn X</li>
-      <li class="project-item cursor-pointer hover:underline transition" data-project="yzyApp">03 — YZY App</li>
-    </ul>
-  </div>
-
-</main>
-
-<script>
-// ----------------------------
-// Utilities & state
-// ----------------------------
-function isMobile() { return window.innerWidth < 768; }
-
-let zIndexCounter = 50;
-let visitCount = parseInt(localStorage.getItem("visitCount") || "0", 10);
-visitCount++; localStorage.setItem("visitCount", visitCount);
-let cycleIndex = 1;
-let autoCycleInterval;
-let userInteracted = false;
-
-// ----------------------------
-// Projects data (2-4 items typical)
-// ----------------------------
-const projects = {
-  DrakeCanvas: [
-   { type: 'image', src: 'Content/drakegifs/herloss.gif', width: '300px', height: '300px', link: 'portfolio.html#project-1' },
-   { type: 'image', src: 'Content/drakegifs/views.gif', width: '300px', height: '300px', link: 'portfolio.html#project-1' },
-   { type: 'image', src: 'Content/drakegifs/iceman.gif', width: '300px', height: '300px',link: 'portfolio.html#project-1' },
-   { type: 'image', src: 'Content/drakegifs/takecare.gif', width: '300px', height: '300px', link: 'portfolio.html#project-1' },
-   { type: 'image', src: 'Content/drakegifs/morelife.gif', width: '300px', height: '300px', link: 'portfolio.html#project-1' }
-  ],
-  sznX: [
-   { type: 'image', src: 'sznxgif1.gif', width: '400px', height: '228px', link: 'portfolio.html#project-2' },
-   { type: 'image', src: 'sznxgif2.gif', width: '350px', height: '278px', link: 'portfolio.html#project-2' },
-   { type: 'image', src: 'sznxgif3.gif', width: '500px', height: '278px', link: 'portfolio.html#project-2' }
-  ],
-  yzyApp: [
-   { type: 'image', src: 'yzyappgif1.gif', width: '400px', height: '228px', link: 'portfolio.html#project-5' },
-   { type: 'image', src: 'yzyappgif2.gif', width: '350px', height: '278px', link: 'portfolio.html#project-5' },
-   { type: 'image', src: 'yzyappgif3.gif', width: '500px', height: '278px', link: 'portfolio.html#project-5' }
-  ]
-};
-
-const displayNames = { DrakeCanvas: 'Drake Canvas', sznX: 'Szn X', yzyApp: 'YZY App' };
-const projectItems = document.querySelectorAll('.project-item');
-const mediaGrid = document.getElementById('media-grid');
-const projectSelector = document.getElementById('project-selector');
-
-// ----------------------------
-// Dragging (desktop only)
-// ----------------------------
-function makeDraggable(element, handle) {
-  if (isMobile()) return;
-  let offsetX = 0, offsetY = 0;
-  handle.addEventListener('mousedown', startDrag);
-  function startDrag(e) {
-    if (e.target.closest('#profile-controls')) return;
-    e.preventDefault();
-    if (element.classList.contains('media-container')) stopAutoCycle();
-    element.style.zIndex = zIndexCounter++;
-    offsetX = e.clientX - element.offsetLeft;
-    offsetY = e.clientY - element.offsetTop;
-    if (element.id === 'profile-window') element.style.transform = 'none';
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', stopDrag);
-  }
-  function onDrag(e) {
-    element.style.left = `${e.clientX - offsetX}px`;
-    element.style.top = `${e.clientY - offsetY}px`;
-  }
-  function stopDrag() {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', stopDrag);
-  }
-}
-
-// ----------------------------
-// Intro / Typewriter
-// ----------------------------
-const introOverlay = document.getElementById('intro-overlay');
-const introWindow = document.getElementById('intro-window');
-const introText = document.getElementById('intro-text');
-const siteHeader = document.getElementById('site-header');
-const siteMain = document.getElementById('site-main');
-let introDone = false;
-
-function typeWriter(text, element, speed, callback) {
-  let i = 0;
-  element.textContent = '';
-  function typing() {
-    if (i < text.length) {
-      element.textContent += text.charAt(i);
-      i++;
-      setTimeout(typing, speed);
-    } else { callback && callback(); }
-  }
-  typing();
-}
-
-function finishIntro(skip=false) {
-  if (introDone) return;
-  introDone = true;
-  introWindow.classList.add('minimised');
-  setTimeout(() => {
-    if (!isMobile() && introOverlay) introOverlay.remove();
-    siteHeader.classList.remove('opacity-0');
-    siteMain.classList.remove('opacity-0');
-  }, skip ? 0 : 400);
-}
-
-function playIntro() {
-  if (isMobile()) return;
-  setTimeout(() => {
-    introWindow.classList.add('active');
-    typeWriter("Welcome to loops.szn", introText, 50, () => {
-      setTimeout(() => finishIntro(false), 400);
-    });
-  }, 100);
-}
-
-// ----------------------------
-// Media element creation
-// ----------------------------
-function createMediaElement(item) {
-  let element;
-  if (item.type === 'image') {
-    element = document.createElement('img');
-    element.className = 'media-item';
-    
-    element.dataset.src = item.src;
-    element.alt = '';
-    element.onerror = function() { this.src = 'https://placehold.co/400x300/FF0000/FFFFFF?text=ERROR'; };
-    element.addEventListener('click', e => { e.stopPropagation(); window.location.href = item.link; });
-  } else {
-    element = document.createElement('video');
-    element.className = 'media-item';
-    element.autoplay = true; element.loop = true; element.muted = true; element.playsInline = true;
-    element.dataset.src = item.src;
-    element.addEventListener('click', e => { e.stopPropagation(); window.location.href = item.link; });
-  }
-  return element;
-}
-
-// ----------------------------
-// Overlap helper for desktop placement
-// ----------------------------
-function checkOverlap(rect1, rect2, SPACING = 40) {
-  return !(
-    rect1.right + SPACING < rect2.left ||
-    rect1.left > rect2.right + SPACING ||
-    rect1.bottom + SPACING < rect2.top ||
-    rect1.top > rect2.bottom + SPACING
-  );
-}
-function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
-
-// ----------------------------
-// Generate media (desktop absolute windows; mobile stacked)
-// ----------------------------
-let activeMediaContainers = [];
-function generateMedia(project) {
-  if (!projects[project]) return;
-  const media = projects[project];
-
-  // Clear existing
-  activeMediaContainers.forEach((container, i) => {
-    container.classList.remove('active');
-    setTimeout(() => container.remove(), 400 + i * 50);
-  });
-  activeMediaContainers = [];
-  zIndexCounter = 50;
-
-  // Mobile: stacked & scrollable
-  if (isMobile()) {
-  mediaGrid.innerHTML = '';
-
-  media.forEach((item) => {
-    const container = document.createElement('div');
-    container.className = 'media-container active';
-    const titlebar = document.createElement('div');
-    titlebar.className = 'media-titlebar';
-    titlebar.innerText = (displayNames[project] || project).toUpperCase();
-
-    const content = createMediaElement(item);
-    // 🔸 Load immediately — avoids flicker from delayed src setting
-    content.src = item.src;
-
-    // 🔸 For videos, ensure smooth autoplay
-    if (content.tagName === 'VIDEO') {
-      content.preload = 'auto';
-      content.autoplay = true;
-      content.loop = true;
-      content.muted = true;
-      content.playsInline = true;
+  <script>
+    /* --------------- UTILITIES --------------- */
+    function isMobile() {
+      return window.innerWidth < 768;
     }
 
-    container.appendChild(titlebar);
-    container.appendChild(content);
-    mediaGrid.appendChild(container);
-    activeMediaContainers.push(container);
-  });
+    let zIndexCounter = 50;
+    let visitCount = parseInt(localStorage.getItem("visitCount") || "0", 10);
+    visitCount++;
+    localStorage.setItem("visitCount", visitCount);
 
-  return;
-}
+    let cycleIndex = 1;
+    let autoCycleInterval;
+    let userInteracted = false;
 
-  // Desktop: random non-overlapping placement (preserve original behavior)
-  const PADDING = 60;
-  const desktopNav = document.getElementById('desktop-nav');
-  const headerBottom = desktopNav ? desktopNav.getBoundingClientRect().bottom : 0;
-  const selectorRect = projectSelector.getBoundingClientRect();
-  let placedRects = [];
+    /* --------------- PROJECTS DATA --------------- */
+    const projects = {
+      DrakeCanvas: [
+        {
+          type: "image",
+          src: "Content/drakegifs/herloss.gif",
+          width: "300px",
+          height: "300px",
+          link: "portfolio.html#project-1",
+        },
+        {
+          type: "image",
+          src: "Content/drakegifs/views.gif",
+          width: "300px",
+          height: "300px",
+          link: "portfolio.html#project-1",
+        },
+        {
+          type: "image",
+          src: "Content/drakegifs/iceman.gif",
+          width: "300px",
+          height: "300px",
+          link: "portfolio.html#project-1",
+        },
+        {
+          type: "image",
+          src: "Content/drakegifs/takecare.gif",
+          width: "300px",
+          height: "300px",
+          link: "portfolio.html#project-1",
+        },
+        {
+          type: "image",
+          src: "Content/drakegifs/morelife.gif",
+          width: "300px",
+          height: "300px",
+          link: "portfolio.html#project-1",
+        },
+      ],
 
-  media.forEach((item, i) => {
-    const container = document.createElement('div');
-    container.className = 'media-container';
-    container.style.width = item.width;
-    container.style.height = item.height;
-    const width = parseInt(item.width);
-    const height = parseInt(item.height);
+      sznX: [
+        {
+          type: "image",
+          src: "sznxgif1.gif",
+          width: "400px",
+          height: "228px",
+          link: "portfolio.html#project-2",
+        },
+        {
+          type: "image",
+          src: "sznxgif2.gif",
+          width: "350px",
+          height: "278px",
+          link: "portfolio.html#project-2",
+        },
+        {
+          type: "image",
+          src: "sznxgif3.gif",
+          width: "500px",
+          height: "278px",
+          link: "portfolio.html#project-2",
+        },
+      ],
 
-    const minX = PADDING;
-    const maxX = window.innerWidth - width - PADDING;
-    const minY = headerBottom + PADDING;
-    const maxY = window.innerHeight - height - PADDING;
+      yzyApp: [
+        {
+          type: "image",
+          src: "yzyappgif1.gif",
+          width: "400px",
+          height: "228px",
+          link: "portfolio.html#project-5",
+        },
+        {
+          type: "image",
+          src: "yzyappgif2.gif",
+          width: "350px",
+          height: "278px",
+          link: "portfolio.html#project-5",
+        },
+        {
+          type: "image",
+          src: "yzyappgif3.gif",
+          width: "500px",
+          height: "278px",
+          link: "portfolio.html#project-5",
+        },
+      ],
+    };
 
-    if (maxX <= minX || maxY <= minY) {
-      // fallback to centered placement
-      container.style.left = `${(window.innerWidth - width) / 2}px`;
-      container.style.top = `${(window.innerHeight - height) / 2}px`;
-    } else {
-      let finalLeft = 0, finalTop = 0, placed = false, attempts = 0, maxAttempts = 100;
-      while (!placed && attempts < maxAttempts) {
-        attempts++;
-        let left = Math.random() * (maxX - minX) + minX;
-        let top = Math.random() * (maxY - minY) + minY;
+    const displayNames = {
+      DrakeCanvas: "Drake Canvas",
+      sznX: "Szn X",
+      yzyApp: "YZY App",
+    };
 
-        // selector collision check
-        const SPACING_BUFFER = 20;
-        let selectorCollision = (
-          left < selectorRect.right + SPACING_BUFFER &&
-          left + width > selectorRect.left - SPACING_BUFFER &&
-          top < selectorRect.bottom + SPACING_BUFFER &&
-          top + height > selectorRect.top - SPACING_BUFFER
-        );
-        if (selectorCollision) continue;
+    const projectItems = document.querySelectorAll(".project-item");
+    const mediaGrid = document.getElementById("media-grid");
+    const projectSelector = document.getElementById("project-selector");
 
-        const currentRect = { left: left, top: top, right: left + width, bottom: top + height };
-        let mediaOverlap = false;
-        for (const rect of placedRects) {
-          if (checkOverlap(currentRect, rect, 40)) { mediaOverlap = true; break; }
-        }
-        if (!mediaOverlap) {
-          finalLeft = left; finalTop = top; placed = true; placedRects.push(currentRect);
+    /* --------------- DRAGGABLE --------------- */
+    function makeDraggable(element, handle) {
+      if (isMobile()) return;
+      let offsetX = 0,
+        offsetY = 0;
+
+      handle.addEventListener("mousedown", startDrag);
+
+      function startDrag(e) {
+        if (e.target.closest("#profile-controls")) return;
+        e.preventDefault();
+
+        element.style.zIndex = zIndexCounter++;
+
+        offsetX = e.clientX - element.offsetLeft;
+        offsetY = e.clientY - element.offsetTop;
+
+        document.addEventListener("mousemove", onDrag);
+        document.addEventListener("mouseup", stopDrag);
+      }
+
+      function onDrag(e) {
+        element.style.left = `${e.clientX - offsetX}px`;
+        element.style.top = `${e.clientY - offsetY}px`;
+      }
+
+      function stopDrag() {
+        document.removeEventListener("mousemove", onDrag);
+        document.removeEventListener("mouseup", stopDrag);
+      }
+    }
+
+    /* --------------- INTRO TYPEWRITER --------------- */
+    const introOverlay = document.getElementById("intro-overlay");
+    const introWindow = document.getElementById("intro-window");
+    const introText = document.getElementById("intro-text");
+    const siteHeader = document.getElementById("site-header");
+    const siteMain = document.getElementById("site-main");
+    let introDone = false;
+
+    function typeWriter(text, element, speed, callback) {
+      let i = 0;
+      element.textContent = "";
+
+      function typing() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else {
+          callback && callback();
         }
       }
-      if (!placed) {
-        finalLeft = Math.random() * (maxX - minX) + minX;
-        finalTop = Math.random() * (maxY - minY) + minY;
+
+      typing();
+    }
+
+    function finishIntro(skip = false) {
+      if (introDone) return;
+      introDone = true;
+
+      introWindow.classList.add("minimised");
+
+      setTimeout(() => {
+        if (!isMobile() && introOverlay) introOverlay.remove();
+        siteHeader.classList.remove("opacity-0");
+        siteMain.classList.remove("opacity-0");
+      }, skip ? 0 : 400);
+    }
+
+    function playIntro() {
+      if (isMobile()) return;
+      setTimeout(() => {
+        introWindow.classList.add("active");
+        typeWriter("Welcome to loops.szn", introText, 50, () => {
+          setTimeout(() => finishIntro(false), 400);
+        });
+      }, 100);
+    }
+
+    /* --------------- MEDIA ELEMENT CREATION --------------- */
+    function createMediaElement(item) {
+      let element;
+
+      if (item.type === "image") {
+        element = document.createElement("img");
+        element.className = "media-item";
+        element.dataset.src = item.src;
+
+        element.onerror = function () {
+          this.src =
+            "https://placehold.co/400x300/FF0000/FFFFFF?text=ERROR";
+        };
+
+        element.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.location.href = item.link;
+        });
+      } else {
+        element = document.createElement("video");
+        element.className = "media-item";
+        element.autoplay = true;
+        element.loop = true;
+        element.muted = true;
+        element.playsInline = true;
+        element.dataset.src = item.src;
+
+        element.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.location.href = item.link;
+        });
       }
-      const finalClampedLeft = clamp(finalLeft, minX, maxX);
-      const finalClampedTop = clamp(finalTop, minY, maxY);
-      container.style.left = `${finalClampedLeft}px`;
-      container.style.top = `${finalClampedTop}px`;
+
+      return element;
     }
 
-    const titlebar = document.createElement('div');
-    titlebar.className = 'media-titlebar';
-    titlebar.innerText = (displayNames[project] || project).toUpperCase();
-    container.appendChild(titlebar);
-    const content = createMediaElement(item);
-    container.appendChild(content);
-    content.src = content.dataset.src;
-
-    makeDraggable(container, titlebar);
-    mediaGrid.appendChild(container);
-    activeMediaContainers.push(container);
-    setTimeout(() => container.classList.add('active'), 100 + i * 80);
-  });
-}
-
-// ----------------------------
-// Auto-cycle 
-// ----------------------------
-const projectKeys = Object.keys(projects);
-
-function startAutoCycle() {
-  // Only run auto-cycle on desktop
-  if (isMobile()) return;
-  autoCycleInterval = setInterval(() => {
-    if (!userInteracted) {
-      const project = projectKeys[cycleIndex % projectKeys.length];
-      generateMedia(project);
-      projectItems.forEach(i => i.classList.remove('font-bold'));
-      const activeItem = document.querySelector(`.project-item[data-project="${project}"]`);
-      if (activeItem) activeItem.classList.add('font-bold');
-      cycleIndex++;
+    /* --------------- POSITIONING HELPERS --------------- */
+    function checkOverlap(rect1, rect2, SPACING = 40) {
+      return !(
+        rect1.right + SPACING < rect2.left ||
+        rect1.left > rect2.right + SPACING ||
+        rect1.bottom + SPACING < rect2.top ||
+        rect1.top > rect2.bottom + SPACING
+      );
     }
-  }, 3000);
-}
 
-// Start it only if not mobile
-if (!isMobile()) startAutoCycle();
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
 
-function stopAutoCycle() {
-  if (!userInteracted) {
-    clearInterval(autoCycleInterval);
-    userInteracted = true;
-  }
-}
+    /* --------------- GENERATE MEDIA --------------- */
+    let activeMediaContainers = [];
 
-// ----------------------------
-// Project click handlers
-// ----------------------------
-projectItems.forEach(item => {
-  // Only add click listener to project items with data-project
-  if (item.dataset.project) {
-    item.addEventListener('click', () => {
-      const project = item.dataset.project;
+    function generateMedia(project) {
+      if (!projects[project]) return;
+      const media = projects[project];
+
+      activeMediaContainers.forEach((container, i) => {
+        container.classList.remove("active");
+        setTimeout(() => container.remove(), 400 + i * 50);
+      });
+
+      activeMediaContainers = [];
+      zIndexCounter = 50;
+
+      /* ---- MOBILE ---- */
       if (isMobile()) {
-        // scroll media-grid to top on mobile when switching projects
-        generateMedia(project);
-        document.querySelectorAll('.project-item').forEach(i => i.classList.remove('font-bold'));
-        item.classList.add('font-bold');
-        const grid = document.getElementById('media-grid');
-        if (grid) grid.scrollTop = 0;
-        stopAutoCycle();
+        mediaGrid.innerHTML = "";
+
+        media.forEach((item) => {
+          const container = document.createElement("div");
+          container.className = "media-container active";
+
+          const titlebar = document.createElement("div");
+          titlebar.className = "media-titlebar";
+          titlebar.innerText = (displayNames[project] || project).toUpperCase();
+
+          const content = createMediaElement(item);
+          content.src = item.src;
+
+          if (content.tagName === "VIDEO") {
+            content.preload = "auto";
+            content.autoplay = true;
+            content.loop = true;
+            content.muted = true;
+            content.playsInline = true;
+          }
+
+          container.appendChild(titlebar);
+          container.appendChild(content);
+          mediaGrid.appendChild(container);
+          activeMediaContainers.push(container);
+        });
+
         return;
       }
-      stopAutoCycle();
-      generateMedia(project);
-      projectItems.forEach(i => i.classList.remove('font-bold'));
-      item.classList.add('font-bold');
-    });
-  }
-});
 
-// ----------------------------
-// Profile window (centered on mobile)
-// ----------------------------
-const profileButton = document.getElementById('profile-btn');
-const mobileProfileButton = document.getElementById('mobile-profile-btn');
-let profileWindow = null;
+      /* ---- DESKTOP ---- */
+      const PADDING = 60;
+      const desktopNav = document.getElementById("desktop-nav");
+      const headerBottom = desktopNav
+        ? desktopNav.getBoundingClientRect().bottom
+        : 0;
 
-function createProfileWindow() {
-  if (isMobile()) {
-    // ensure one modal only
-    if (profileWindow) return;
-  } else {
-    if (profileWindow) {
-      profileWindow.style.zIndex = zIndexCounter++;
-      return;
+      const selectorRect = projectSelector.getBoundingClientRect();
+      let placedRects = [];
+
+      media.forEach((item, i) => {
+        const container = document.createElement("div");
+        container.className = "media-container";
+        container.style.width = item.width;
+        container.style.height = item.height;
+
+        const width = parseInt(item.width);
+        const height = parseInt(item.height);
+
+        const minX = PADDING;
+        const maxX = window.innerWidth - width - PADDING;
+        const minY = headerBottom + PADDING;
+        const maxY = window.innerHeight - height - PADDING;
+
+        /* Random placement */
+        let finalLeft = 0,
+          finalTop = 0,
+          placed = false,
+          attempts = 0,
+          maxAttempts = 100;
+
+        while (!placed && attempts < maxAttempts) {
+          attempts++;
+
+          let left = Math.random() * (maxX - minX) + minX;
+          let top = Math.random() * (maxY - minY) + minY;
+
+          let selectorCollision =
+            left < selectorRect.right + 20 &&
+            left + width > selectorRect.left - 20 &&
+            top < selectorRect.bottom + 20 &&
+            top + height > selectorRect.top - 20;
+
+          if (selectorCollision) continue;
+
+          const currentRect = {
+            left: left,
+            top: top,
+            right: left + width,
+            bottom: top + height,
+          };
+
+          let mediaOverlap = false;
+
+          for (const rect of placedRects) {
+            if (checkOverlap(currentRect, rect, 40)) {
+              mediaOverlap = true;
+              break;
+            }
+          }
+
+          if (!mediaOverlap) {
+            finalLeft = left;
+            finalTop = top;
+            placed = true;
+            placedRects.push(currentRect);
+          }
+        }
+
+        if (!placed) {
+          finalLeft = Math.random() * (maxX - minX) + minX;
+          finalTop = Math.random() * (maxY - minY) + minY;
+        }
+
+        finalLeft = clamp(finalLeft, minX, maxX);
+        finalTop = clamp(finalTop, minY, maxY);
+
+        container.style.left = `${finalLeft}px`;
+        container.style.top = `${finalTop}px`;
+
+        const titlebar = document.createElement("div");
+        titlebar.className = "media-titlebar";
+        titlebar.innerText = (displayNames[project] || project).toUpperCase();
+
+        container.appendChild(titlebar);
+
+        const content = createMediaElement(item);
+        content.src = content.dataset.src;
+
+        makeDraggable(container, titlebar);
+        container.appendChild(content);
+
+        mediaGrid.appendChild(container);
+        activeMediaContainers.push(container);
+
+        setTimeout(() => container.classList.add("active"), 100 + i * 80);
+      });
     }
-  }
 
-  profileWindow = document.createElement('div');
-  profileWindow.id = 'profile-window';
-  profileWindow.style.zIndex = zIndexCounter++;
+    /* --------------- AUTO CYCLE --------------- */
+    const projectKeys = Object.keys(projects);
 
-  const titlebar = document.createElement('div');
-  titlebar.id = 'profile-titlebar';
-  titlebar.innerHTML = `
-    <span>PROFILE</span>
-    <div id="profile-controls">
-      <button id="profile-minimise">–</button>
-      <button id="profile-close">×</button>
-    </div>
-  `;
+    function startAutoCycle() {
+      if (isMobile()) return;
 
-  const content = document.createElement('div');
-  content.id = 'profile-content';
-  content.innerHTML = `
-    <div class="flex flex-col items-start gap-4">
-      <img src="portrait.jpg" alt="Portrait">
-      <div class="space-y-1 text-sm">
-        <a href="https://behance.net/loopsye" target="_blank" class="block text-blue-700 hover:underline">// BEHANCE</a>
-        <a href="https://instagram.com/loops.szn" target="_blank" class="block text-blue-700 hover:underline">// INSTAGRAM</a>
-        <a href="blog.html" target="_blank" class="block text-blue-700 hover:underline">// BLOG</a>
-      </div>
-    </div>
-    <div id="profile-description">
-      <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
-      <p>Loops is a creative video editor and designer who worked with brands like
-       <a href="https://en.wikipedia.org/wiki/Yeezy_(brand)#Yeezy_App" target="_blank" class="text-blue-700 hover:underline">YZY</a>,
-       <a href="https://www.cena2k.com/" target="_blank" class="text-blue-700 hover:underline">CENA2K</a>, 
-       <a href="https://www.youtube.com/watch?v=IHnOskzT8Sg" target="_blank" class="text-blue-700 hover:underline">CODEFORTY</a>, 
-       and did work for artists like 
-       <a href="https://www.youtube.com/watch?v=IHnOskzT8Sg" target="_blank" class="text-blue-700 hover:underline">R2R Moe</a>,
-       and 
-       <a href="https://www.instagram.com/p/DQdml9kiGej/" target="_blank" class="text-blue-700 hover:underline">KayCyy</a>, 
-       </p>
-      <br><p>Never in beta. Always in loops.</p>
-    </div>
-  `;
+      autoCycleInterval = setInterval(() => {
+        if (!userInteracted) {
+          const project = projectKeys[cycleIndex % projectKeys.length];
+          generateMedia(project);
 
-  profileWindow.appendChild(titlebar);
-  profileWindow.appendChild(content);
-  document.body.appendChild(profileWindow);
+          projectItems.forEach((i) => i.classList.remove("font-bold"));
+          const activeItem = document.querySelector(
+            `.project-item[data-project="${project}"]`
+          );
+          if (activeItem) activeItem.classList.add("font-bold");
 
-  // Initial placement (Overwritten by CSS on mobile, but needed for desktop)
-  if (!isMobile()) {
-    const { innerWidth, innerHeight } = window;
-    profileWindow.style.left = `${(innerWidth - profileWindow.offsetWidth) / 2}px`;
-    profileWindow.style.top = `${(innerHeight - profileWindow.offsetHeight) / 2}px`;
-  }
+          cycleIndex++;
+        }
+      }, 3000);
+    }
 
-  makeDraggable(profileWindow, titlebar);
+    if (!isMobile()) startAutoCycle();
 
-  const minimiseBtn = profileWindow.querySelector('#profile-minimise');
-  minimiseBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    content.classList.toggle('hidden');
-    minimiseBtn.textContent = content.classList.contains('hidden') ? '+' : '–';
-  });
-
-  const closeBtn = profileWindow.querySelector('#profile-close');
-  closeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    profileWindow.classList.remove('active');
-    setTimeout(() => {
-      profileWindow.remove();
-      profileWindow = null;
-      document.body.classList.remove('mobile-lock');
-    }, 200);
-  });
-
-  setTimeout(() => profileWindow.classList.add('active'), 50);
-}
-
-profileButton && profileButton.addEventListener('click', createProfileWindow);
-mobileProfileButton && mobileProfileButton.addEventListener('click', () => {
-  createProfileWindow();
-});
-
-// ----------------------------
-// Parallax (desktop only)
-// ----------------------------
-const grid = document.getElementById('parallax-grid');
-if (!isMobile() && !('ontouchstart' in window)) {
-  document.addEventListener('mousemove', e => {
-    const { innerWidth, innerHeight } = window;
-    const x = (e.clientX / innerWidth - 0.5) * 20;
-    const y = (e.clientY / innerHeight - 0.5) * 20;
-    grid.style.transform = `translate(${x}px, ${y}px)`;
-  });
-} else {
-  grid.style.display = 'none';
-}
-
-
-// ----------------------------
-// Initial page load
-// ----------------------------
-window.addEventListener('load', () => {
-  if (isMobile()) {
-    if(introOverlay) introOverlay.style.display = 'none';
-  }
-  if (visitCount === 1 || visitCount % 3 === 0) {
-    playIntro();
-  } else {
-    finishIntro(true);
-  }
-  // initial project
-  generateMedia('DrakeCanvas'); 
-  const initialActiveProject = 
- document.querySelector('.project-item[data-project="Drake Canvas"]');
-  if (initialActiveProject) 
- initialActiveProject.classList.add('font-bold');
-
-  if (isMobile()) {
-    stopAutoCycle(); 
-  }
-
-  cycleIndex = 1;
-});
-
-// Accessibility: resize handling to re-render for mobile/desktop mode changes
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    // regenerate current project to switch between desktop/mobile layout placement
-    const activeItem = document.querySelector('.project-item.font-bold');
-    const project = activeItem ? activeItem.dataset.project : 'sznX';
-    generateMedia(project);
-
-    // reposition profile modal on breakpoint change to avoid weird offsets
-    if (profileWindow) {
-      if (!isMobile()) {
-        // reposition center for desktop
-        const { innerWidth, innerHeight } = window;
-        profileWindow.style.left = `${(innerWidth - profileWindow.offsetWidth) / 2}px`;
-        profileWindow.style.top = `${(innerHeight - profileWindow.offsetHeight) / 2}px`;
-        profileWindow.style.transform = 'scale(1)';
-      } else {
-        // ensure mobile centering classes are applied on mobile resize
-        profileWindow.style.left = '50%';
-        profileWindow.style.top = '50%';
-        profileWindow.style.transform = 'translate(-50%, -50%)';
+    function stopAutoCycle() {
+      if (!userInteracted) {
+        clearInterval(autoCycleInterval);
+        userInteracted = true;
       }
     }
-  }, 180);
+
+    /* --------------- PROJECT CLICK --------------- */
+    projectItems.forEach((item) => {
+      if (!item.dataset.project) return;
+
+      item.addEventListener("click", () => {
+        const project = item.dataset.project;
+
+        stopAutoCycle();
+        generateMedia(project);
+
+        projectItems.forEach((i) => i.classList.remove("font-bold"));
+        item.classList.add("font-bold");
+
+        if (isMobile()) {
+          const grid = document.getElementById("media-grid");
+          if (grid) grid.scrollTop = 0;
+        }
+      });
+    });
+
+    /* --------------- PROFILE WINDOW --------------- */
+    const profileButton = document.getElementById("profile-btn");
+    const mobileProfileButton = document.getElementById("mobile-profile-btn");
+
+    let profileWindow = null;
+
+    function createProfileWindow() {
+      if (isMobile()) {
+        if (profileWindow) return;
+      } else {
+        if (profileWindow) {
+          profileWindow.style.zIndex = zIndexCounter++;
+          return;
+        }
+      }
+
+      profileWindow = document.createElement("div");
+      profileWindow.id = "profile-window";
+      profileWindow.style.zIndex = zIndexCounter++;
+
+      const titlebar = document.createElement("div");
+      titlebar.id = "profile-titlebar";
+      titlebar.innerHTML = `
+        <span>PROFILE</span>
+        <div id="profile-controls">
+          <button id="profile-minimise">–</button>
+          <button id="profile-close">×</button>
+        </div>
+      `;
+
+      const content = document.createElement("div");
+      content.id = "profile-content";
+
+      content.innerHTML = `
+        <div class="flex flex-col items-start gap-4">
+          <img src="portrait.jpg" alt="Portrait">
+
+          <div class="space-y-1 text-sm">
+            <a href="https://behance.net/loopsye" target="_blank" class="block text-blue-700 hover:underline">// BEHANCE</a>
+            <a href="https://instagram.com/loops.szn" target="_blank" class="block text-blue-700 hover:underline">// INSTAGRAM</a>
+            <a href="blog.html" target="_blank" class="block text-blue-700 hover:underline">// BLOG</a>
+            <a href="moodboard.html" target="_blank" class="block text-blue-700 hover:underline">// MOODBOARD</a>
+          </div>
+        </div>
+
+        <div id="profile-description">
+          <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
+
+          <p>
+            Loops is a creative video editor and designer who worked with brands like
+            <a href="https://en.wikipedia.org/wiki/Yeezy_(brand)#Yeezy_App" target="_blank" class="text-blue-700 hover:underline">YZY</a>,
+            <a href="https://www.cena2k.com/" target="_blank" class="text-blue-700 hover:underline">CENA2K</a>,
+            <a href="https://www.youtube.com/watch?v=IHnOskzT8Sg" target="_blank" class="text-blue-700 hover:underline">CODEFORTY</a>,
+            and did work for artists like
+            <a href="https://www.youtube.com/watch?v=IHnOskzT8Sg" target="_blank" class="text-blue-700 hover:underline">R2R Moe</a>,
+            and
+            <a href="https://www.instagram.com/p/DQdml9kiGej/" target="_blank" class="text-blue-700 hover:underline">KayCyy</a>.
+          </p>
+
+          <br>
+          <p>Never in beta. Always in loops.</p>
+        </div>
+      `;
+
+      profileWindow.appendChild(titlebar);
+      profileWindow.appendChild(content);
+      document.body.appendChild(profileWindow);
+
+      if (!isMobile()) {
+        const { innerWidth, innerHeight } = window;
+        profileWindow.style.left = `${
+          (innerWidth - profileWindow.offsetWidth) / 2
+        }px`;
+        profileWindow.style.top = `${
+          (innerHeight - profileWindow.offsetHeight) / 2
+        }px`;
+      }
+
+      makeDraggable(profileWindow, titlebar);
+
+      const minimiseBtn = profileWindow.querySelector("#profile-minimise");
+      minimiseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        content.classList.toggle("hidden");
+        minimiseBtn.textContent = content.classList.contains("hidden")
+          ? "+"
+          : "–";
+      });
+
+      const closeBtn = profileWindow.querySelector("#profile-close");
+      closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        profileWindow.classList.remove("active");
+
+        setTimeout(() => {
+          profileWindow.remove();
+          profileWindow = null;
+          document.body.classList.remove("mobile-lock");
+        }, 200);
+      });
+
+      setTimeout(() => profileWindow.classList.add("active"), 50);
+    }
+
+    profileButton &&
+      profileButton.addEventListener("click", createProfileWindow);
+    mobileProfileButton &&
+      mobileProfileButton.addEventListener("click", createProfileWindow);
+
+    /* --------------- PARALLAX --------------- */
+    const grid = document.getElementById("parallax-grid");
+
+    if (!isMobile() && !("ontouchstart" in window)) {
+      document.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 20;
+        grid.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    } else {
+      grid.style.display = "none";
+    }
+
+    /* --------------- INITIAL LOAD --------------- */
+    window.addEventListener("load", () => {
+      if (isMobile()) {
+        if (introOverlay) introOverlay.style.display = "none";
+      }
+
+      if (visitCount === 1 || visitCount % 3 === 0) {
+        playIntro();
+      } else {
+        finishIntro(true);
+      }
+
+      generateMedia("DrakeCanvas");
+
+      const initial = document.querySelector(
+        '.project-item[data-project="DrakeCanvas"]'
+      );
+      if (initial) initial.classList.add("font-bold");
+
+      if (isMobile()) stopAutoCycle();
+      cycleIndex = 1;
+    });
+
+    /* --------------- RESIZE HANDLING --------------- */
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const activeItem = document.querySelector(".project-item.font-bold");
+        const project = activeItem
+          ? activeItem.dataset.project
+          : "sznX";
+
+        generateMedia(project);
+
+        if (profileWindow) {
+          if (!isMobile()) {
+            const { innerWidth, innerHeight } = window;
+            profileWindow.style.left = `${
+              (innerWidth - profileWindow.offsetWidth) / 2
+            }px`;
+            profileWindow.style.top = `${
+              (innerHeight - profileWindow.offsetHeight) / 2
+            }px`;
+            profileWindow.style.transform = "scale(1)";
+          } else {
+            profileWindow.style.left = "50%";
+            profileWindow.style.top = "50%";
+            profileWindow.style.transform =
+              "translate(-50%, -50%)";
+          }
+        }
+      }, 180);
+    });
+
+    document.addEventListener(
+      "touchstart",
+      function () {},
+      { passive: true }
+    );
+ 
+      const musicPlayer = document.getElementById('music-player-window');
+
+// Make the music player draggable
+makeDraggable(musicPlayer, musicPlayer.querySelector('.media-titlebar'));
+
+const musicAudio = document.getElementById('music-audio');
+const playBtn = document.getElementById('music-play');
+const prevBtn = document.getElementById('music-prev');
+const nextBtn = document.getElementById('music-next');
+const volumeSlider = document.getElementById('music-volume');
+const musicTitle = document.getElementById('music-title');
+
+// SONG LIST WITH NAMES + PATHS
+const musicTracks = [
+  { name: "Too Much", src: "Content/music/Too Much.mp3" },
+  { name: "Bound", src: "Content/music/Bound.mp3" },
+  { name: "Not You Too", src: "Content/music/Not You Too.mp3" },
+  { name: "You Mean Everything To Me", src: "Content/music/You Mean Everything To Me.mp3" },
+  { name: "Huit octobre 1971", src: "Content/music/Huit octobre 1971.mp3" }
+];
+
+let currentTrack = 0;
+
+
+// LOAD TRACK + UPDATE TITLE
+function loadTrack(i) {
+  currentTrack = (i + musicTracks.length) % musicTracks.length;
+
+  musicAudio.src = musicTracks[currentTrack].src;
+
+  if (musicTitle) {
+    musicTitle.textContent = musicTracks[currentTrack].name;
+  }
+}
+
+
+// PLAY / PAUSE
+playBtn.addEventListener('click', () => {
+  if (!musicAudio.src) loadTrack(0);
+
+  if (musicAudio.paused) {
+    musicAudio.play();
+    playBtn.textContent = 'PAUSE';
+  } else {
+    musicAudio.pause();
+    playBtn.textContent = 'PLAY';
+  }
 });
 
-// Prevent accidental long-press drag on mobile images
-document.addEventListener('touchstart', function(){}, {passive:true});
 
-</script>
+// PREVIOUS TRACK
+prevBtn.addEventListener('click', () => {
+  loadTrack(currentTrack - 1);
+  musicAudio.play();
+  playBtn.textContent = 'PAUSE';
+});
 
+
+// NEXT TRACK
+nextBtn.addEventListener('click', () => {
+  loadTrack(currentTrack + 1);
+  musicAudio.play();
+  playBtn.textContent = 'PAUSE';
+});
+
+
+// VOLUME CONTROL
+volumeSlider.addEventListener('input', () => {
+  musicAudio.volume = volumeSlider.value;
+});
+
+  </script>
 </body>
-
 </html>
