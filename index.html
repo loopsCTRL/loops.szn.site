@@ -350,6 +350,21 @@
     .fixed-content .project-item:hover {
       color: #777;
     }
+    .media-container.focused {
+  outline: 2px solid #111;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 767px) {
+  .media-container {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .media-container.focused {
+    transform: scale(1.02);
+  }
+}
+
 
     /* ---------------------------- MOBILE ----------------------------- */
     @media (max-width: 767px) {
@@ -480,30 +495,51 @@
         </li>
       </ul>
     </div>
-    <div id="music-player-window" class="media-container active" style="width:260px; height:180px; left:120px; top:120px; ">
-<div class="media-titlebar">MUSIC PLAYER.EXE</div>
-<div class="p-4 font-mono text-sm flex flex-col gap-3">
-<div class="flex items-center justify-between">
-<button id="music-prev" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟨</button>
-<button id="music-play" class="px-3 py-1 border border-black rounded hover:bg-gray-200">PLAY</button>
-<button id="music-next" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟩</button>
-</div>
+<div id="music-player-window" class="media-container active" style="width:260px; height:180px; left:120px; top:120px; ">
+      <div class="media-titlebar">MUSIC PLAYER.EXE</div>
+      <div class="p-4 font-mono text-sm flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+      <button id="music-prev" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟨</button>
+      <button id="music-play" class="px-3 py-1 border border-black rounded hover:bg-gray-200">PLAY</button>
+      <button id="music-next" class="px-2 py-1 border border-black rounded hover:bg-gray-200">⟩</button>
+      </div>
 
 
-<div class="flex items-center gap-2">
-<span>VOL</span>
-<input id="music-volume" type="range" min="0" max="1" step="0.01" class="flex-grow" />
-</div>
+      <div class="flex items-center gap-2">
+      <span>VOL</span>
+      <input id="music-volume" type="range" min="0" max="1" step="0.01" class="flex-grow" />
+      </div>
 
 
-<div id="music-title" class="mt-1 text-xs tracking-wide"></div>
-<audio id="music-audio" preload="auto"></audio>
-</div>
+      <div id="music-title" class="mt-1 text-xs tracking-wide"></div>
+      <audio id="music-audio" preload="auto"></audio>
+      </div>
 </div>
 
   </main>
 
   <script>
+    const mediaObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
+      const el = entry.target;
+
+      if (el.dataset.src) {
+        el.src = el.dataset.src;
+        delete el.dataset.src;
+      }
+
+      mediaObserver.unobserve(el);
+    });
+  },
+  {
+    rootMargin: "150px", // preload slightly before visible
+    threshold: 0.1
+  }
+);
+
     /* --------------- UTILITIES --------------- */
     function isMobile() {
       return window.innerWidth < 768;
@@ -699,39 +735,29 @@
 
     /* --------------- MEDIA ELEMENT CREATION --------------- */
     function createMediaElement(item) {
-      let element;
+  let element;
 
-      if (item.type === "image") {
-        element = document.createElement("img");
-        element.className = "media-item";
-        element.dataset.src = item.src;
+  if (item.type === "image") {
+    element = document.createElement("img");
+    element.className = "media-item";
 
-        element.onerror = function () {
-          this.src =
-            "https://placehold.co/400x300/FF0000/FFFFFF?text=ERROR";
-        };
+    // IMPORTANT: lazy load via data-src
+    element.dataset.src = item.src;
+    element.loading = "lazy";
 
-        element.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.location.href = item.link;
-        });
-      } else {
-        element = document.createElement("video");
-        element.className = "media-item";
-        element.autoplay = true;
-        element.loop = true;
-        element.muted = true;
-        element.playsInline = true;
-        element.dataset.src = item.src;
+    element.onerror = function () {
+      this.src = "https://placehold.co/400x300/FF0000/FFFFFF?text=ERROR";
+    };
 
-        element.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.location.href = item.link;
-        });
-      }
+    element.addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.location.href = item.link;
+    });
+  }
 
-      return element;
-    }
+  return element;
+}
+
 
     /* --------------- POSITIONING HELPERS --------------- */
     function checkOverlap(rect1, rect2, SPACING = 40) {
@@ -751,6 +777,14 @@
     let activeMediaContainers = [];
 
     function generateMedia(project) {
+      activeMediaContainers.forEach(container => {
+  const img = container.querySelector("img");
+  if (img) {
+    img.src = "";
+    img.removeAttribute("src");
+  }
+});
+
       if (!projects[project]) return;
       const media = projects[project];
 
@@ -764,35 +798,40 @@
 
       /* ---- MOBILE ---- */
       if (isMobile()) {
-        mediaGrid.innerHTML = "";
+  mediaGrid.innerHTML = "";
+  activeMediaContainers = [];
 
-        media.forEach((item) => {
-          const container = document.createElement("div");
-          container.className = "media-container active";
+  media.forEach((item) => {
+    const container = document.createElement("div");
+    container.className = "media-container active";
 
-          const titlebar = document.createElement("div");
-          titlebar.className = "media-titlebar";
-          titlebar.innerText = (displayNames[project] || project).toUpperCase();
+    const titlebar = document.createElement("div");
+    titlebar.className = "media-titlebar";
+    titlebar.innerText = (displayNames[project] || project).toUpperCase();
 
-          const content = createMediaElement(item);
-          content.src = item.src;
+    const content = createMediaElement(item);
 
-          if (content.tagName === "VIDEO") {
-            content.preload = "auto";
-            content.autoplay = true;
-            content.loop = true;
-            content.muted = true;
-            content.playsInline = true;
-          }
+    container.appendChild(titlebar);
+    container.appendChild(content);
+    mediaGrid.appendChild(container);
 
-          container.appendChild(titlebar);
-          container.appendChild(content);
-          mediaGrid.appendChild(container);
-          activeMediaContainers.push(container);
-        });
+    // OBSERVE for lazy loading
+    mediaObserver.observe(content);
 
-        return;
-      }
+    // Mobile interaction: tap to focus
+    container.addEventListener("click", () => {
+      document
+        .querySelectorAll(".media-container")
+        .forEach(c => c.classList.remove("focused"));
+
+      container.classList.add("focused");
+    });
+
+    activeMediaContainers.push(container);
+  });
+
+  return;
+}
 
       /* ---- DESKTOP ---- */
       const PADDING = 60;
