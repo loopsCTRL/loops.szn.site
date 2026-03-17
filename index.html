@@ -453,9 +453,57 @@
       #sb { display: none; }
       #cursor, #cursor-dot { display: none; }
     }
+    /* ── BUTTERFLIES ── */
+    .butterfly {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      will-change: transform;
+    }
+    .butterfly-full {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #lens-flare {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+
+    background:
+      radial-gradient(circle at 70% 20%, rgba(255,255,255,0.25), transparent 40%),
+      radial-gradient(circle at 75% 25%, rgba(0,220,255,0.18), transparent 50%),
+      radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12), transparent 60%);
+
+    mix-blend-mode: screen;
+    opacity: 0.4;
+    animation: flareDrift 12s ease-in-out infinite;
+  }
+
+  @keyframes flareDrift {
+    0%   { transform: translateX(0) translateY(0) scale(1); }
+    50%  { transform: translateX(-30px) translateY(20px) scale(1.05); }
+    100% { transform: translateX(0) translateY(0) scale(1); }
+  }
+    /* ── PAGE TRANSITION OUT ── */
+  #transition-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    pointer-events: none; opacity: 0;
+    background: linear-gradient(160deg, #1a1424 0%, #1e1630 50%, #16121e 100%);
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #transition-overlay.active { opacity: 1; pointer-events: all; }
   </style>
 </head>
+<!-- add right before </body> -->
+<div id="transition-overlay"></div>
 <body>
+  <div id="lens-flare"></div>
 
 <div id="bg"></div>
 <div id="sun"></div>
@@ -512,8 +560,11 @@
       </div>
     </div>
     <nav class="htabs">
+      <nav class="htabs">
       <a href="portfolio.html">PORTFOLIO</a>
+      <a href="ai.html">AI</a>
       <button id="profile-btn">PROFILE</button>
+    </nav>
     </nav>
   </div>
 </header>
@@ -552,6 +603,38 @@
 </div>
 
 <script>
+  let butterflyTimer;
+
+  function launchButterflies() {
+    const b = document.createElement('img');
+    b.src = 'Content/butterflies.gif?v=' + Date.now(); // forces replay
+    b.className = 'butterfly-full';
+
+    document.body.appendChild(b);
+
+    // remove after duration of your GIF
+    setTimeout(() => b.remove(), 3500);
+  }
+
+  // start once + repeat every 12s
+  function startButterflies() {
+    launchButterflies(); // first play
+
+    butterflyTimer = setInterval(() => {
+      launchButterflies();
+    }, 15000);
+  }
+// TRANSITION TO AI
+document.querySelector('a[href="ai.html"]').addEventListener('click', e => {
+  e.preventDefault();
+  const overlay = document.getElementById('transition-overlay');
+  // Simultaneously drain the sky to desaturated
+  document.body.style.transition = 'filter 1.2s cubic-bezier(0.4,0,0.2,1)';
+  document.body.style.filter = 'saturate(0) brightness(0.4)';
+  overlay.classList.add('active');
+  setTimeout(() => window.location.href = 'ai.html', 1300);
+});
+  
 const isMobile=()=>window.innerWidth<768;
 const hasHover=()=>window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 let Z=50,vc=parseInt(localStorage.getItem('lszn_vc')||'0')+1;
@@ -807,7 +890,23 @@ setInterval(tick,1000);tick();
 
 const introEl=document.getElementById('intro'),introWin=document.getElementById('intro-win'),introTyped=document.getElementById('intro-typed');
 let introDone=false;
-function finishIntro(instant){if(introDone)return;introDone=true;introWin.classList.add('off');setTimeout(()=>introEl.remove(),instant?0:450);}
+function finishIntro(instant){
+  if(introDone)return;
+  introDone=true;
+  introWin.classList.add('off');
+
+  setTimeout(()=>{
+  introEl.remove();
+
+  // give browser time to render after removing intro
+  setTimeout(launchButterflies, 200);
+  setTimeout(() => {
+  introEl.remove();
+  startButterflies(); // 👈 THIS replaces launchButterflies
+}, instant ? 0 : 450);
+
+}, instant ? 0 : 450);
+}
 function playIntro(){
   if(isMobile()){finishIntro(true);return;}
   setTimeout(()=>{
