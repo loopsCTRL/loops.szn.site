@@ -574,10 +574,12 @@
 
 <div id="ps">
   <div class="ps-title">PROJECTS</div>
-  <ul class="ps-list">
-    <li class="pi" data-project="DrakeCanvas">01 — DRAKE</li>
-    <li class="pi" data-project="sznX">02 — SZN X</li>
-    <li class="pi" data-project="yzyApp">03 — YZY APP</li>
+    <ul class="ps-list">
+    <li class="pi" data-project="recap">01 — RECAP</li>
+    <li class="pi" data-project="DrakeCanvas">02 — DRAKE</li>
+    <li class="pi" data-project="sznX">03 — SZN X</li>
+    <li class="pi" data-project="yzyApp">04 — YZY APP</li>
+  </ul>
   </ul>
 </div>
 
@@ -689,6 +691,9 @@ function attachGlitch(win,img){
 }
 
 const projects={
+   recap:[
+  {src:'Content/recap.gif',w:455,h:256,link:'portfolio.html'},
+],
   DrakeCanvas:[
     {src:'Content/drakegifs/herloss.gif',w:295,h:295,link:'portfolio.html#project-1'},
     {src:'Content/drakegifs/views.gif',w:295,h:295,link:'portfolio.html#project-1'},
@@ -698,8 +703,10 @@ const projects={
   ],
   sznX:[{src:'sznxgif1.gif',w:370,h:208,link:'portfolio.html#project-2'},{src:'sznxgif2.gif',w:320,h:254,link:'portfolio.html#project-2'},{src:'sznxgif3.gif',w:455,h:256,link:'portfolio.html#project-2'}],
   yzyApp:[{src:'yzyappgif1.gif',w:370,h:208,link:'portfolio.html#project-5'},{src:'yzyappgif2.gif',w:320,h:254,link:'portfolio.html#project-5'},{src:'yzyappgif3.gif',w:455,h:256,link:'portfolio.html#project-5'}],
+ 
 };
-const dnames={DrakeCanvas:'Drake Canvas',sznX:'Szn X',yzyApp:'YZY App'};
+const dnames={recap:'Recap',DrakeCanvas:'Drake Canvas',sznX:'Szn X',yzyApp:'YZY App'};
+
 let activeWins=[];
 
 function noOverlap(a,b,p=28){return!(a.r+p<b.l||a.l>b.r+p||a.b+p<b.t||a.t>b.b+p);}
@@ -718,6 +725,17 @@ function generateMedia(project){
   const wvR=document.getElementById('wvz').getBoundingClientRect();
   const sbH=34,PX=50,PY=44;
   let placed=[{l:psR.left-20,t:psR.top-20,r:psR.right+20,b:window.innerHeight},{l:wvR.left-20,t:wvR.top-20,r:wvR.right+20,b:window.innerHeight}];
+  if(media.length === 1) {
+    const w=makeWin(media[0],project);
+    const W=media[0].w, H=media[0].h+30;
+    w.style.width=W+'px'; w.style.height=H+'px';
+    w.style.left=((window.innerWidth-W)/2)+'px';
+    w.style.top=((window.innerHeight-H)/2)+'px';
+    sceneInner.appendChild(w);
+    activeWins.push(w);
+    setTimeout(()=>w.classList.add('active'),60);
+    return;
+  }
   media.forEach((item,i)=>{
     const w=makeWin(item,project);
     const W=item.w,H=item.h+30;
@@ -918,9 +936,9 @@ function playIntro(){
 
 window.addEventListener('load',()=>{
   if(vc===1||vc%3===0)playIntro();else finishIntro(true);
-  generateMedia('DrakeCanvas');
-  document.querySelector('.pi[data-project="DrakeCanvas"]')?.classList.add('active');
-  cycleIdx=1;
+  generateMedia('recap');
+  document.querySelector('.pi[data-project="recap"]')?.classList.add('active');
+  cycleIdx=0;
 });
 window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(()=>{const a=document.querySelector('.pi.active');generateMedia(a?a.dataset.project:'DrakeCanvas');},200);});
 document.addEventListener('touchstart',()=>{},{passive:true});
